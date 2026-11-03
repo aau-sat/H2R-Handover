@@ -20,7 +20,7 @@ tmux split-window -h -t $SESSION:0.2
 if [ "$mode" = "sim" ]; then
     tmux send-keys -t $SESSION:0.0 "cd /home/christian/rgmc-2026/utils/ur" C-m
     tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
-    tmux send-keys -t $SESSION:0.0 "ros2 launch ur_custom spawn_ur_with_gripper.launch.py" C-m
+    tmux send-keys -t $SESSION:0.0 "ros2 launch ur_custom spawn_ur_with_gripper_thesis.launch.py" C-m
     sleep $START_DELAY
 fi
 
@@ -35,7 +35,7 @@ tmux send-keys -t $SESSION:0.2 "source /home/christian/rgmc-2026/utils/ur/instal
 tmux send-keys -t $SESSION:0.2 "source /home/christian/rgmc-2026/utils/ros2_ws/install/setup.bash" C-m
 tmux send-keys -t $SESSION:0.2 "cd /home/christian/rgmc-2026/utils/simple_ur_code/moveit_stuff" C-m
 tmux send-keys -t $SESSION:0.2 "source install/setup.bash" C-m
-tmux send-keys -t $SESSION:0.2 "ros2 launch moveit_stuff plan_approach_grasp.launch.py placement_pose_interpolation_steps:=10 grasp_pose_interpolation_steps:=30 grasp_pose_interpolation_profile:=ease_in_quad placement_pose_interpolation_profile:=ease_in_quad placement_strategy:=initial use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false config_id:=23" C-m
+tmux send-keys -t $SESSION:0.2 "ros2 launch moveit_stuff h2r_thesis.launch.py placement_pose_interpolation_steps:=10 placement_pose_interpolation_profile:=ease_in_quad placement_strategy:=predefined use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false config_id:=666 enable_real_time_filtering:=true" C-m
 
 # back to first window
 tmux select-window -t $SESSION:0

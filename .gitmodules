@@ -23,3 +23,6 @@
 [submodule "utils/segmentation/transformers"]
 	path = utils/segmentation/transformers
 	url = https://github.com/huggingface/transformers.git
+[submodule "utils/grasp_generation/Depth-Anything-V2"]
+	path = utils/grasp_generation/Depth-Anything-V2
+	url = https://github.com/DepthAnything/Depth-Anything-V2.git

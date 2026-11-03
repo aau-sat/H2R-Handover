@@ -31,7 +31,7 @@ DEFAULT_HEADER_BYTES = 3
 DEFAULT_PAYLOAD_BYTES = DEFAULT_NUM_CHANNELS * 4  # bytes (4 bytes per float)
 DEFAULT_EXPECTED_MIN_LEN = DEFAULT_HEADER_BYTES + DEFAULT_PAYLOAD_BYTES
 DEFAULT_DEVICE_UID = "DEVB9975E99211783F"
-DEFAULT_ADAPTER = "hci1"
+DEFAULT_ADAPTER = "hci0"
 
 # Contact Detection Parameters
 DEFAULT_ALPHA = 0.8
@@ -155,7 +155,7 @@ class TactileSensorNode(Node):
         self.is_contact = False
 
         # Calibration state
-        self.is_calibrating = False
+        self.is_calibrating = True
         self.calibration_buffer = []
         self.baseline_mean = [0.0] * self.num_channels
         self.baseline_std = [1.0] * self.num_channels

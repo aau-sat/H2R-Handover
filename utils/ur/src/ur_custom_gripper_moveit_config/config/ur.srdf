@@ -27,7 +27,6 @@
     </group>
     <group name="ur_custom_manipulator">
         <chain base_link="base_link" tip_link="tool_changer_tool0"/>
-        <!-- <chain base_link="base_link" tip_link="grasp_center"/> -->
     </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="open" group="gripper">
@@ -85,12 +84,12 @@
         <joint name="wrist_3_joint" value="0"/>
     </group_state>
     <group_state name="home_rgmc" group="ur_custom_manipulator">
-        <joint name="shoulder_pan_joint" value="-1.0276091734515589"/>
-        <joint name="shoulder_lift_joint" value="-1.3470729899457474"/>
-        <joint name="elbow_joint" value="-2.443051338195801"/>
-        <joint name="wrist_1_joint" value="3.542280836696289"/>
-        <joint name="wrist_2_joint" value="-1.0477855841266077"/>
-        <joint name="wrist_3_joint" value="0.10723354667425156"/>
+        <joint name="shoulder_pan_joint" value="-1.0830772558795374"/>
+        <joint name="shoulder_lift_joint" value="-1.2622782748988648"/>
+        <joint name="elbow_joint" value="-2.1172471046447754"/>
+        <joint name="wrist_1_joint" value="3.1385208803364257"/>
+        <joint name="wrist_2_joint" value="-1.1024778524981897"/>
+        <joint name="wrist_3_joint" value="0.11944413185119629"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="eff" parent_link="tool_changer_tool0" group="gripper" parent_group="ur_custom_manipulator"/>

@@ -27,7 +27,7 @@ sleep $START_DELAY
 
 # Pane 2: Motion Planning with Moveit2
 tmux send-keys -t $SESSION:0.2 "source /home/christian/rgmc-2026/utils/ur/install/setup.bash" C-m
-tmux send-keys -t $SESSION:0.2 "ros2 launch ur_custom spawn_ur_with_gripper.launch.py use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false" C-m 
+tmux send-keys -t $SESSION:0.2 "ros2 launch ur_custom spawn_ur_with_gripper_thesis.launch.py use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false" C-m 
 # sleep $START_DELAY
 
 # Pane 3: Tactile Sensing

@@ -215,7 +215,7 @@ class DualSegmentationPoseEstimator(Node):
         self.declare_parameter('depth_right_frame_id', 'right_color_optical_frame')
 
         self.declare_parameter('pose_topic', '/goal_pose')
-        self.declare_parameter('target_frame', 'base')
+        self.declare_parameter('target_frame', 'base_link')
         self.declare_parameter('tf_static_topic', '/tf_static')
         self.declare_parameter('hand_tracker_topic', '/hand_tracker')
         self.declare_parameter('hand_pose_left_topic', '/hand_pose/left')
@@ -273,7 +273,7 @@ class DualSegmentationPoseEstimator(Node):
         )
 
         self.pose_topic = str(self.get_parameter('pose_topic').value or '/goal_pose')
-        self.target_frame = str(self.get_parameter('target_frame').value or 'base')
+        self.target_frame = str(self.get_parameter('target_frame').value or 'base_link')
         self.tf_static_topic = str(self.get_parameter('tf_static_topic').value or '/tf_static')
         
         self.hand_tracker_topic = str(self.get_parameter('hand_tracker_topic').value or '/hand_tracker')

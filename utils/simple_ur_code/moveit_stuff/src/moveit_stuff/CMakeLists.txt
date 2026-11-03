@@ -17,47 +17,19 @@ find_package(grasp_generation REQUIRED)
 find_package(visual_properties REQUIRED)
 # find_package(touchdown_detection REQUIRED)
 find_package(tactile_detection REQUIRED)
+find_package(OpenMP REQUIRED)
 
-# add_executable(move_group_interface_test src/move_group_interface_test.cpp)
-# add_executable(orient_gripper_test src/orient_gripper_test.cpp)
-# add_executable(servo_test src/servo_test.cpp)
-# add_executable(pose_tracking_test src/pose_tracking_test.cpp)
-# add_executable(estimated_goal_tracking src/estimated_goal_tracking.cpp)
-# add_executable(generated_goal_tracking src/generated_goal_tracking.cpp)
-# add_executable(plan_approach src/plan_approach.cpp)
-add_executable(plan_approach_grasp 
-  src/plan_approach_grasp.cpp
-  ../real_time_filter/src/OneEuroFilter.cpp
-)
-# add_executable(gripper_set_width_test src/gripper_set_width_test.cpp)
+# add_executable(plan_approach_grasp 
+#   src/plan_approach_grasp.cpp
+#   ../real_time_filter/src/OneEuroFilter.cpp
+# )
 add_executable(end_effector_s8 src/end_effector_s8.cpp)
-# add_executable(gripper_closed_loop_control src/gripper_closed_loop_control.cpp)
+add_executable(h2r_handover 
+  src/h2r_thesis.cpp
+  src/real_time_filter/OneEuroFilter.cpp
+)
 
-# target_include_directories(move_group_interface_test PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(orient_gripper_test PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(servo_test PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(estimated_goal_tracking PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(pose_tracking_test PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(generated_goal_tracking PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-# target_include_directories(plan_approach PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-target_include_directories(plan_approach_grasp PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-# target_include_directories(gripper_set_width_test PUBLIC
+# target_include_directories(plan_approach_grasp PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>)
 target_include_directories(end_effector_s8 PUBLIC
@@ -66,107 +38,29 @@ target_include_directories(end_effector_s8 PUBLIC
 # target_include_directories(gripper_closed_loop_control PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>)
+target_include_directories(h2r_handover PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
-# target_compile_features(move_group_interface_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(orient_gripper_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(servo_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(estimated_goal_tracking PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(pose_tracking_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(generated_goal_tracking PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(plan_approach PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_compile_features(plan_approach_grasp PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(gripper_set_width_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+# target_compile_features(plan_approach_grasp PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(end_effector_s8 PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-# target_compile_features(gripper_closed_loop_control PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(h2r_handover PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # ament_target_dependencies(
-#   move_group_interface_test
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   orient_gripper_test
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   servo_test
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   "moveit_servo"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   pose_tracking_test
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   "controller_manager_msgs"
-#   "moveit_servo"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   estimated_goal_tracking
+#   plan_approach_grasp
 #   "rclcpp"
 #   "moveit_ros_planning_interface"
 #   "geometry_msgs"
 #   "moveit_visual_tools"
 #   "moveit_servo"
 #   "controller_manager_msgs"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   generated_goal_tracking
+#   "grasp_generation"
+#   # "touchdown_detection"
+#   "visual_properties"
+#   "tactile_detection"
 #   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   "moveit_servo"
-#   "controller_manager_msgs"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-# ament_target_dependencies(
-#   plan_approach
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   "moveit_servo"
-#   "controller_manager_msgs"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
-ament_target_dependencies(
-  plan_approach_grasp
-  "rclcpp"
-  "moveit_ros_planning_interface"
-  "geometry_msgs"
-  "moveit_visual_tools"
-  "moveit_servo"
-  "controller_manager_msgs"
-  "grasp_generation"
-  # "touchdown_detection"
-  "visual_properties"
-  "tactile_detection"
-  "rclcpp"
-  "rclcpp_action"
-  "rclcpp_components"
-  ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-)
-# ament_target_dependencies(
-#   gripper_set_width_test
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
+#   "rclcpp_action"
+#   "rclcpp_components"
 #   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
 # )
 ament_target_dependencies(
@@ -180,18 +74,26 @@ ament_target_dependencies(
   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
 )
 
-# ament_target_dependencies(
-#   gripper_closed_loop_control
-#   "rclcpp"
-#   "moveit_ros_planning_interface"
-#   "geometry_msgs"
-#   "moveit_visual_tools"
-#   "moveit_servo"
-#   "controller_manager_msgs"
-#   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
-# )
+ament_target_dependencies(
+  h2r_handover
+  "rclcpp"
+  "moveit_ros_planning_interface"
+  "geometry_msgs"
+  "moveit_visual_tools"
+  "moveit_servo"
+  "controller_manager_msgs"
+  "grasp_generation"
+  "visual_properties"
+  "tactile_detection"
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components"
+  ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost
+)
 
-install(TARGETS plan_approach_grasp end_effector_s8 #gripper_closed_loop_control
+target_link_libraries(h2r_handover dqrobotics OpenMP::OpenMP_CXX)
+
+install(TARGETS end_effector_s8 h2r_handover #plan_approach_grasp
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch

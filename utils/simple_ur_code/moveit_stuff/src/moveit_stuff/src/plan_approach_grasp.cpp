@@ -1920,7 +1920,9 @@ public:
           {
             grasp_pose_.header = result.result->grasp_goals.header;
             grasp_pose_.pose = result.result->grasp_goals.poses.front();
-            transformToWorldFrame(grasp_pose_);
+            if (grasp_pose_.header.frame_id != base_link_frame_)
+              transformToWorldFrame(grasp_pose_);
+            
             apply_first_grasp_type = true;
           }
 
@@ -2167,15 +2169,21 @@ private:
     }
 
       Eigen::Isometry3d T_base = poseToMatrix(pose.pose);
-        
-      if (pose.header.frame_id != base_frame_)
+      Eigen::Isometry3d T_out;
+      if (pose.header.frame_id == base_frame_)
       {
-        RCLCPP_ERROR_STREAM(LOGGER, "Received pose IS NOT in base frame as expected: " << pose.header.frame_id);
+        // Then: apply base->base_link transform: T_out = T_baselink_to_base @ T_base
+        T_out = T_baselink_to_base_ * T_base;
+      }
+      else if (pose.header.frame_id == base_link_frame_)
+      {
+        T_out = T_base;
+      }
+      else
+      {
+        RCLCPP_ERROR_STREAM(LOGGER, "Received pose IS NOT in base or base_link frame as expected: " << pose.header.frame_id);
         return false;
       }
-
-      // Then: apply base->base_link transform: T_out = T_baselink_to_base @ T_base
-      Eigen::Isometry3d T_out = T_baselink_to_base_ * T_base;
 
       // Convert back to pose, output in base_link frame
       pose.header.frame_id = base_link_frame_;
@@ -2272,7 +2280,6 @@ private:
 
     // Convert back to pose, output in world frame
     pose.header.frame_id = base_link_frame_;
-    pose.header.stamp = pose.header.stamp;
     pose.pose = matrixToPose(T_out);
   }
 
@@ -2294,7 +2301,9 @@ private:
     }
 
     geometry_msgs::msg::PoseStamped transformed_msg = *msg;
-    transformToWorldFrame(transformed_msg); // transform incoming pose to world frame for workspace check and storage
+    if (transformed_msg.header.frame_id != base_link_frame_)
+      transformToWorldFrame(transformed_msg); // transform incoming pose to world frame for workspace check and storage
+    
     if (!checkPoseInWorkspace(transformed_msg.pose.position.x, transformed_msg.pose.position.y))
     {
       RCLCPP_WARN_STREAM(LOGGER, "Received pose is out of workspace bounds. Ignoring. POse (x, y): " << transformed_msg.pose.position.x << ',' << transformed_msg.pose.position.y << " min x: " << workspace_x_min_ << ", max x: " << workspace_x_max_ << ", min y: " << workspace_y_min_ << ", max y: " << workspace_y_max_);
@@ -2304,7 +2313,6 @@ private:
     if (!received_pose_)
     {
       initial_object_pose_ = transformed_msg;
-      // transformToWorldFrame(initial_object_pose_);
       received_pose_ = true;
       // update config_.aproach_distance based on initial euclidian distance from the object
       if (start_pose_initialized_)
@@ -2375,8 +2383,6 @@ private:
     }
 
     latest_pose_ = transformed_msg;
-    // latest_pose_ = *msg;
-    // transformToWorldFrame(latest_pose_);
     
     // Maintain a history of poses for velocity estimation
     pose_history_.push_back(latest_pose_);

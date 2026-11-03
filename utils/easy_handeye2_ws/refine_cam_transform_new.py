@@ -874,7 +874,7 @@ parser.add_argument('--first_to_base_calibration', type=str, default='/home/stud
                     help='Calibration file for the first camera (for cam-to-base TF)')
 # parser.add_argument('--first_to_base_calibration', type=str, default='/home/student-team/rgmc-2026/utils/easy_handeye2_ws/right_refined_cam_to_base.yaml', 
 #                     help='Calibration file for the first camera (for cam-to-base TF)')
-# parser.add_argument('--second_to_base_calibration', type=str, default='/home/student-team/rgmc-2026/utils/easy_handeye2_ws/right_refined_cam_to_base.yaml', 
+# parser.add_argument('--second_to_base_calibration', type=str, default='/home/student-team/rgmc-2026/utils/easy_handeye2_ws/left_refined_cam_to_base.yaml', 
 #                     help='Calibration file for the second camera (for cam-to-base TF)')
 parser.add_argument('--second_to_base_calibration', type=str, default='/home/student-team/.ros2/easy_handeye2/calibrations/calibration_left_camera.calib', 
                     help='Calibration file for the second camera (for cam-to-base TF)')

@@ -16,7 +16,7 @@ class ArucoBoardDetector(Node):
     def __init__(self):
         super().__init__('aruco_board_detector')
         
-        self.camera_name = self.declare_parameter('camera_name', 'left').get_parameter_value().string_value
+        self.camera_name = self.declare_parameter('camera_name', 'right').get_parameter_value().string_value
 
         self.bridge = CvBridge()
 

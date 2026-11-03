@@ -116,7 +116,7 @@ tmux send-keys -t $SESSION:1.3 "conda deactivate" C-m
 tmux send-keys -t $SESSION:1.3 "source ~/env_isaaclab/bin/activate" C-m
 tmux send-keys -t $SESSION:1.3 "source ~/rgmc-2026/utils/ros2_ws/install/setup.bash" C-m
 tmux send-keys -t $SESSION:1.3 "cd ~/rgmc-2026/utils/grasp_generation" C-m
-tmux send-keys -t $SESSION:1.3 "python grasp_generator_three_stage.py" C-m
+tmux send-keys -t $SESSION:1.3 "python grasp_generator_thesis.py" C-m
 
 
 tmux new-window -t $SESSION:2 -n "Others"

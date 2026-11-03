@@ -28,6 +28,7 @@ endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/GenerateGrasp.action"
+  "msg/GraspCluster.msg"
   DEPENDENCIES action_msgs geometry_msgs
 )
 

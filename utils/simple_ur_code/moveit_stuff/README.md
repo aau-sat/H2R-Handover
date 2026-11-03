@@ -1,3 +1,26 @@
+# Modifications Relative to the Competition System
+
+This branch contains modifications to the competition system on the `dev` branch in scope of the Bachelor Thesis "Adaptive Grasp Planning for Industrial Human-to-Robot Handover". Refer to the root README.md for details.
+New grasp clustering approach is used - refer to the thesis for details. Moreover, modified `moveit2` source code is used for motion optimization, task redundancy resolution and singularity avoidance.
+
+Modifications include:
+* [`h2r_thesis.cpp`](./src/moveit_stuff/src/h2r_thesis.cpp) as handover execution script instead of `plan_approach_grasp.cpp`. The [launch](./src/moveit_stuff/launch/h2r_thesis.launch.py) file for it is used in [startup](../../ur/moveit_setup_tmux.sh) script.
+* Generated grasps arrive via a topic, which is a lot more efficient than using an Action Server.
+* New [GraspCluster.msg](../../ros2_ws/src/grasp_generation/msg/GraspCluster.msg) message which not only contains grasp generation results but also groups poses into clusters.
+* `base_link` is used as inter-PC communication frame, not `base`, avoiding continuous transformations between `base` and `base_link` frames.
+* `grasp_center` frame is used as MoveIt command frame instead of `tool0` frame, which is more intuitive for grasping. Refer to `moveit_servo` [config](../../ur/src/ur_custom/config/servo_config_thesis.yaml) and `moveit2` [srdf](../../ur/src/ur_custom_gripper_moveit_config/config/ur_grasp_center.srdf) files.
+* System startup [script](../../ur/moveit_setup_tmux.sh) script was modified and new launch [file](../../ur/src/ur_custom/launch/spawn_ur_with_gripper_thesis.launch.py) was made for the new handover code.
+
+The matching **Visual/Blackwell PC** changes for running the new handover code, including support for the new grasp message type, are on this branch as well.
+
+## Modified Moveit2 Source Code
+Mainly `moveit_servo` was modified and Hessian computation were ported from `jazzy`. On the **Motion PC**, the modified source code is in the same workspace folder which was used for the competition system (`~/ws_moveit`). However, the `pose_tracking_thesis.cpp` script was created for the new system. You can continue to use the updated source code with the old system. If something goes wrong, modify the `CMakeLists.txt` file in the `moveit_servo` package to use the original `pose_tracking.cpp` source code instead of the `pose_tracking_thesis.cpp`, then rebuild the package. You can also just clone the `moveit2` repository again, checkout the `humble` branch to build the original source code.
+If H2R Handover system is built on a new machine, the modified `moveit2` source code needs to be cloned from this [repository](https://github.com/Incomprehensible/moveit2/tree/humble_optim_rrmc_dls) (branch `humble_optim_rrmc_dls`) and built. Refer to this repository's README.md for detailed API and algorithm description.
+
+---
+
+_The rest of this file documents the competition system that the thesis builds on._
+
 # Testing Motion Planning for Simulated UR Robot
 
 This package contains test scripts to perform:
@@ -96,7 +119,7 @@ Try changing these parameters to the how the system responds. I suggest to recor
 
 ### MoveIt Config
 Look up the UR description and MoveIt config in `utils/ur/src/ur_custom` and `utils/ur/src/ur_custom_gripper_moveit_config`. The most important files are:
-* [PID config](../../ur/src/ur_custom/config/pose_tracking_settings_s8.yaml)
+* [PID config](../../ur/src/ur_custom/config/pose_tracking_settings.yaml)
 * [MoveIt Servo config](../../ur/src/ur_custom/config/servo_config.yaml)
 * [MoveIt SRDF](../../ur/src/ur_custom_gripper_moveit_config/config/ur.srdf)
 * [UR URDF and XACRO files](../../ur/src/ur_custom/urdf/ur_custom_gripper.urdf.xacro)
@@ -104,4 +127,4 @@ Look up the UR description and MoveIt config in `utils/ur/src/ur_custom` and `ut
 
 For example, if you want to use the internal force-torque sensor instead of external one for touchdown detection, besides changing the touchdown script name in the startup file you should also modify the URDF to remove the extra length of the tool (with the FT sensor model). You may also need to modify the SRDF to comment out the collision links from there but only if errors appear.
 
-Note that this branch uses Robotiq's gripper base_link as the MoveIt command frame, since it's a frame that grasp generation model uses as well. 
+Note that the competition system uses Robotiq's gripper base_link as the MoveIt command frame, since it's a frame that grasp generation model uses as well. 

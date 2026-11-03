@@ -136,3 +136,14 @@ ros2 run object_tracker depth_clipper_node --ros-args -p depth_clipped_topic:='/
 # Run object tracker with depth-clipped topics
 ros2 run object_tracker object_tracker_node --ros-args -p camera_topic_left:='/depth/clipped/left' -p camera_topic_right:='/depth/clipped/right'
 ```
+
+# Usage for Vision Pipeline
+In order to make using it easier the recommendation is to use the following command for publishing the depth-clipped topics:
+```sh
+ros2 run object_tracker depth_clipper_node --ros-args -p depth_clipped_topic:='/camera/left/color/depth_clipped' -p camera_topic_rgb:='/camera/left/c
+olor/image_raw' -p camera_topic_d:='/camera/left/aligned_depth_to_color/image_raw'
+```
+
+```sh
+ros2 run object_tracker depth_clipper_node --ros-args -p depth_clipped_topic:='/camera/right/color/depth_clipped' -p camera_topic_rgb:='/camera/right/color/image_raw' -p camera_topic_d:='/camera/right/aligned_depth_to_color/image_raw'
+```

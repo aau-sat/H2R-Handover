@@ -57,8 +57,7 @@ sleep $START_DELAY
 tmux send-keys -t $SESSION:0.2 "conda deactivate" C-m
 tmux send-keys -t $SESSION:0.2 "conda activate graspgen" C-m
 tmux send-keys -t $SESSION:0.2 "cd ~/packages/GraspGen/GraspGen" C-m
-# tmux send-keys -t $SESSION:0.2 "PYTHONPATH=. python scripts/grasp_service_batched_new.py --orient $reconstruct_flag --gripper_config models/checkpoints/graspgen_robotiq_2f_140.yml --visualize" C-m
-tmux send-keys -t $SESSION:0.2 "PYTHONPATH=. python scripts/grasp_service_three_stage.py --orient $reconstruct_flag $visualize_flag --gripper_config models/checkpoints/graspgen_robotiq_2f_140.yml" C-m
+tmux send-keys -t $SESSION:0.2 "PYTHONPATH=. python scripts/grasp_service_thesis.py --spherical_filter --orient $reconstruct_flag $visualize_flag --gripper_config models/checkpoints/graspgen_robotiq_2f_140.yml" C-m
 
 # LLM Service
 tmux send-keys -t $SESSION:0.3 "conda deactivate" C-m

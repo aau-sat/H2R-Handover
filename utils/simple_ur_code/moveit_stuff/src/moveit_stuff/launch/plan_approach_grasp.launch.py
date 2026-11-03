@@ -90,7 +90,7 @@ def launch_setup(context, *args, **kwargs):
     servo_params = {
         "moveit_servo": ParameterBuilder("ur_custom")
         .yaml("config/servo_config.yaml")
-        .yaml("config/pose_tracking_settings_s8.yaml")
+        .yaml("config/pose_tracking_settings.yaml")
         .to_dict()
     }
 

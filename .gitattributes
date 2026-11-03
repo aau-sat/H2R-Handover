@@ -18,3 +18,5 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
 *.pth filter=lfs diff=lfs merge=lfs -text
 *.t7 filter=lfs diff=lfs merge=lfs -text
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+utils/yolo-world/mobileclip2_b.ts filter=lfs diff=lfs merge=lfs -text

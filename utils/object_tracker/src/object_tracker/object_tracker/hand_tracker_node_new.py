@@ -855,7 +855,8 @@ class HandTrackerNode(Node):
 
         out_msg = Bool()
         out_msg.data = True
-        self.handover_detected_pub.publish(out_msg)
+        for _ in range(5):
+            self.handover_detected_pub.publish(out_msg)
         self.handover_detected_once = True
 
         if not self.handover_log_already_done:

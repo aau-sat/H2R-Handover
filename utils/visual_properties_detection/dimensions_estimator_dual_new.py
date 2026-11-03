@@ -534,7 +534,7 @@ class DimensionsEstimator(Node):
 		self.save_fused_box_glb = self.declare_parameter('save_fused_box_glb', False).get_parameter_value().bool_value
 		self._tf_static_seen_children = set()
 		self._tf_static_subscription_stopped = False
-		self.target_frame = 'base'
+		self.target_frame = 'base_link'
 		self.source_frame_left = 'left_color_optical_frame'
 		self.source_frame_right = 'right_color_optical_frame'
 		self._left_camera_tf = None
@@ -1248,7 +1248,8 @@ class DimensionsEstimator(Node):
 		self.estimated_dimensions.mass_kg = float('nan')
 		self.estimated_dimensions.label   = ''
 		self.estimated_dimensions.deformability_rating = -1
-		self.dimensions_pub.publish(self.estimated_dimensions)
+		for _ in range(5):
+			self.dimensions_pub.publish(self.estimated_dimensions)
 		self.get_logger().warning(
 			'Published default 2 cm dimensions due to complete mask failure.')
 
