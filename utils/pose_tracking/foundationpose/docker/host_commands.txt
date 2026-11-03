@@ -1,0 +1,8 @@
+# In a terminal outside Docker where you run realsense and other ros2 nodes
+
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# make sure the path to the file is absolute!
+export FASTRTPS_DEFAULT_PROFILES_FILE=/absolute/path/to/fastdds_no_shm.xml
+
+# https://robotics.stackexchange.com/questions/101827/docker-containers-with-ros2-are-unable-to-communicate

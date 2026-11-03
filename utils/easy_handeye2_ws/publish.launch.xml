@@ -1,0 +1,20 @@
+<launch>
+  <!-- Ensure numeric locale is correct -->
+  <set_env name="LC_NUMERIC" value="en_US.UTF-8"/>
+
+
+  <include file="$(find-pkg-share easy_handeye2)/launch/publish.launch.py">
+    <arg name="name" value="calibration_right_camera"/>
+  </include>
+
+
+
+  <include file="$(find-pkg-share easy_handeye2)/launch/publish.launch.py">
+    <arg name="name" value="calibration_left_camera"/>
+  </include>
+
+  <!-- <include file="$(find-pkg-share easy_handeye2)/launch/publish.launch.py">
+    <arg name="cam_left_tf" value="calibration_left_camera"/>
+  </include> -->
+  
+</launch>

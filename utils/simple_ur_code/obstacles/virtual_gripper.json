@@ -1,0 +1,17 @@
+{
+    "id": "virtual_gripper",
+    "frame_id": "tool0",
+    "link_name": "tool0",
+    "primitives": [
+        {
+            "type": "CYLINDER",
+            "dimensions": [0.26, 0.09]
+        }
+    ],
+    "pose": {
+        "position": {"x": 0.0, "y": 0.0, "z": 0.132},
+        "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    },
+    "operation": "ADD",
+    "attached": true
+}

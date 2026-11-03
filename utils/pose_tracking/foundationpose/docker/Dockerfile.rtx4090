@@ -1,0 +1,60 @@
+# FROM shingarey/foundationpose_custom_cuda121:updated_files
+FROM shingarey/foundationpose_custom_cuda121:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y lsb-release && apt-get clean all
+
+ENV ROS_DISTRO=foxy
+
+RUN apt update
+RUN apt install locales
+RUN locale-gen en_US en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
+RUN apt install software-properties-common -y
+RUN add-apt-repository universe
+
+RUN apt update && apt install curl -y
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN apt update
+RUN apt upgrade -y
+RUN dpkg --configure -a
+RUN apt install -f
+# RUN apt install ros-foxy-desktop python3-argcomplete -y
+
+# RUN apt install python3-colcon-common-extensions -y
+
+# RUN apt-get install apt-transport-https curl -y
+
+# RUN mkdir -p /etc/apt/keyrings
+# RUN curl -sSf https://librealsense.realsenseai.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null
+
+# RUN echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.realsenseai.com/Debian/apt-repo `lsb_release -cs` main" | tee /etc/apt/sources.list.d/librealsense.list
+# RUN apt-get update
+
+# RUN apt-get install librealsense2-dkms -y
+# RUN apt-get install librealsense2-utils -y
+# RUN apt-get install librealsense2-dev -y
+# RUN apt-get install librealsense2-dbg -y
+
+# RUN apt install ros-foxy-librealsense2* -y
+
+# ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+ENV SHELL=/bin/bash
+RUN ln -sf /bin/bash /bin/sh
+
+# COPY post_startup.sh /usr/local/bin/post_startup.sh
+# RUN chmod +x /usr/local/bin/post_startup.sh
+# ENTRYPOINT ["/usr/local/bin/post_startup.sh"]
+# CMD ["/bin/bash"]
+
+COPY post_startup.sh .
+RUN chmod +x post_startup.sh
+RUN sh post_startup.sh
+CMD ["/bin/bash"]

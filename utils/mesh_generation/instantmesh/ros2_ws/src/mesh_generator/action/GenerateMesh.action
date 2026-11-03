@@ -1,0 +1,9 @@
+sensor_msgs/Image rgb_image
+sensor_msgs/Image mask_image
+---
+bool status
+string mesh_path
+---
+string current_status
+float32 progress 
+

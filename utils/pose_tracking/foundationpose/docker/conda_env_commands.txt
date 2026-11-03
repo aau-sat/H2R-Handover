@@ -1,0 +1,30 @@
+# In a terminal inside Docker where you use conda environment and run FoundationPose scripts
+
+# this is only needed for the old 16GB PC visual pipeline setup
+source /opt/ros/foxy/setup.bash
+
+# after realsense_ws was built in ros2 (second) terminal
+source realsense_ws/install/setup.bash
+
+# after ros2_ws was built in ros2 (second) terminal
+source ros2_ws/install/setup.bash
+
+export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
+
+conda install libtiff=4.0.8 -y
+
+# (NOT USED ANYMORE) if not enough, try the following commands:
+conda install python=3.8.10 -y
+conda install libtiff=4.0.8 -y
+pip uninstall pillow -y
+pip install pillow 
+
+# if you encounter this error when running pose_tracker node:
+# from cv_bridge.boost.cv_bridge_boost import getCvType
+# ImportError: /lib/x86_64-linux-gnu/libp11-kit.so.0: undefined symbol: ffi_type_pointer, version LIBFFI_BASE_7.0
+# run:
+conda install libffi==3.3
+
+# https://stackoverflow.com/questions/77150540/importerror-lib-x86-64-linux-gnu-libstdc-so-6-version-glibcxx-3-4-29-not
+# https://unix.stackexchange.com/questions/749588/import-error-lib-libgdal-so-26-undefined-symbol-tiffreadrgbatileext-version
+# https://medium.com/@gz285639/fixing-libp11-kit-so-0-undefined-symbol-ffi-type-pointer-in-ros-and-carla-integration-0aef01d7c6ff

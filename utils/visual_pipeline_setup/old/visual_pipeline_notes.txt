@@ -1,0 +1,86 @@
+1. set up pose tracking env and node
+
+open terminal
+cd packages/FoundationPose/docker
+
+xhost +
+
+sh run_container.sh
+
+open vscode
+attach to running container (foundation_pose)
+create two terminals
+in first terminal, run commands specified in packages/FoundationPose/docker/conda_env_commands.txt
+in second terminal, run commands specified in packages/FoundationPose/docker/ros_env_commands.txt
+
+2. set up realsense nodes
+open another terminal
+
+run commands specified in packages/FoundationPose/docker/host_commands.txt
+but make sure the path to the fastdds_no_shm.xml is absolute:
+export FASTRTPS_DEFAULT_PROFILES_FILE=/home/nadezhda/packages/FoundationPose/docker/fastdds_no_shm.xml
+
+run: (for old camera)
+ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true align_depth.enable:=true enable_color:=true enable_depth:=true pointcloud.enable:=true
+
+UPDATE
+for new camera (435i):
+ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true align_depth.enable:=true enable_color:=true enable_depth:=true pointcloud.enable:=true depth_module.depth_profile:=640x480x30 rgb_camera.color_profile:=640x480x30
+
+3. set up yolo node
+open another vscode window
+open ~/rgmc-2026
+in the terminal:
+source ~/env_isaaclab/bin/activate
+cd utils/handover_detection/
+source install/setup.bash
+
+run commands specified in packages/FoundationPose/docker/host_env_commands.txt
+but make sure the path to the fastdds_no_shm.xml is absolute.
+
+run:
+ros2 run handover_detection test_yolo_rgb
+
+4. set up sam3 service
+
+open another vscode window
+open ~/RGMC
+
+in the terminal:
+conda activate sam3
+cd sam3
+python segmentation_service.py
+
+if you are using continuous segmentation, make sure that you provide pregenerated mesh file to pose estimation node (mesh generator and sam3 can't run together due to memory constraints). Also, in this case make sure that in segmentation_service.py the exit line is commented out:
+
+finally:
+            conn.close()
+            torch.cuda.empty_cache() # enable if generation of the mesh is used and vram memory is not enough
+            # exit(0)
+
+if you are not using continuous segmentation or need to regenerate the mesh, remove the comment.
+
+5. set up mesh generation node
+
+open another vscode window
+open ~/RGMC/InstantMesh
+conda activate instantmesh
+
+run commands specified in packages/FoundationPose/docker/host_env_commands.txt: 
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export FASTRTPS_DEFAULT_PROFILES_FILE=/home/nadezhda/packages/FoundationPose/docker/fastdds_no_shm.xml
+but make sure the path to the fastdds_no_shm.xml is absolute.
+
+source ros2_ws/install/setup.bash
+
+python mesh_generator_node.py
+
+6. finally, run pose tracker node from (1) inside docker container (first conda terminal):
+python pose_tracker_node_scaling.py
+or, since we have a mesh already:
+python pose_tracker_node_scaling.py --mesh_file meshes/mesh.obj
+for continuous segmentation (online position refinement):
+python pose_tracker_node_scaling.py --mesh_file meshes/mesh.obj --use_continuous_segmentation
+beware that with continuous segmentation the orientation of the object may be very inconsistent. I advise to not use continuous segmentation for the demo.
+
+

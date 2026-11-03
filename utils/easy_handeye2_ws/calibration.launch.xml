@@ -1,0 +1,59 @@
+<launch>
+  <!-- Ensure numeric locale is correct -->
+  <set_env name="LC_NUMERIC" value="en_US.UTF-8"/>
+
+  <!-- ================= UR ROBOT DRIVER ================= -->
+<include file="$(find-pkg-share ur_robot_driver)/launch/ur_control.launch.py">
+  <arg name="ur_type" value="ur3e"/>
+  <arg name="robot_ip" value="192.168.2.12"/>
+  <arg name="launch_rviz" value="false"/>
+  <arg name="headless_mode" value="true"/>
+</include>
+
+
+  <!-- ================= MOVEIT ================= -->
+  <include file="$(find-pkg-share ur_moveit_config)/launch/ur_moveit.launch.py">
+    <arg name="ur_type" value="ur3e"/>
+    <arg name="launch_rviz" value="true"/>
+  </include>
+
+
+  <!--  <include file="$(find-pkg-share easy_handeye2)/launch/publish.launch.py">
+    <arg name="name" value="my_eob_calib"/>  
+  </include> -->
+
+  <include file="$(find-pkg-share easy_handeye2)/launch/calibrate.launch.py">
+    <arg name="calibration_type" value="eye_on_base"/>
+    <arg name="name" value="calib_camera_left"/>
+
+    <!-- Robot TF frames -->
+    <!-- CHANGED from base_link rotatiion about Z -->
+    <arg name="robot_base_frame" value="base"/> 
+    <arg name="robot_effector_frame" value="tool0"/>
+
+    <!-- Tracking system TF frames (before it was aruco_0_placement)-->
+    <arg name="tracking_base_frame" value="cam_left_color_optical_frame"/>
+    <arg name="tracking_marker_frame" value="cam_left_board_center"/>
+  </include>
+
+
+  <include file="$(find-pkg-share easy_handeye2)/launch/calibrate.launch.py">
+    <arg name="calibration_type" value="eye_on_base"/>
+    <arg name="name" value="calib_camera_right"/>
+
+    <!-- Robot TF frames -->
+    <!-- CHANGED from base_link rotatiion about Z -->
+    <arg name="robot_base_frame" value="base"/> 
+    <arg name="robot_effector_frame" value="tool0"/>
+
+    <!-- Tracking system TF frames (before it was aruco_0_placement)-->
+    <arg name="tracking_base_frame" value="cam_right_color_optical_frame"/>
+    <arg name="tracking_marker_frame" value="cam_right_board_center"/>
+  </include>
+
+  <!-- <include file="$(find-pkg-share easy_handeye2)/launch/publish.launch.py">
+    <arg name="name" value="my_eob_calib"/>
+  </include> -->
+
+  
+</launch>

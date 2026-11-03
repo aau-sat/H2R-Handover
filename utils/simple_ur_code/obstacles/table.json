@@ -1,0 +1,29 @@
+{
+    "id": "table",
+    "frame_id": "world",
+    "primitives": [
+        {
+            "type": "BOX",
+            "dimensions": [
+                1.75,
+                1.0,
+                1.0
+            ]
+        }
+    ],
+    "pose": {
+        "position": {
+            "x": 0.0,
+            "y": 0.6799999999999999,
+            "z": -0.6957919745062902
+        },
+        "orientation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 0.0
+        }
+    },
+    "operation": "ADD",
+    "attached": false
+}

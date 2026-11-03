@@ -1,0 +1,769 @@
+#!/usr/bin/env python3
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Bool, String
+from geometry_msgs.msg import PoseStamped
+from cv_bridge import CvBridge
+import numpy as np
+import socket
+import os
+from scipy.spatial.transform import Rotation
+from cv_bridge import CvBridge
+from realsense2_camera_msgs.msg import RGBD
+import cv2
+import json
+import sensor_msgs.msg as sensor_msgs
+from typing import Tuple, Dict
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+import open3d as o3d
+import torch
+
+# Taken from GraspGen
+def depth2points(
+    depth: np.array,
+    fx: int,
+    fy: int,
+    cx: int,
+    cy: int,
+    xmap: np.array = None,
+    ymap: np.array = None,
+    rgb: np.array = None,
+    seg: np.array = None,
+    mask: np.arange = None,
+) -> Dict:
+    """Compute point cloud from a depth image.
+
+    Args:
+        depth (np.array): 2D depth image.
+        fx (int): Focal length x.
+        fy (int): Focal length y.
+        cx (int): Camera principal point x.
+        cy (int): Camera principal point y.
+        xmap (np.array, optional): precomputed meshgrid map X. Defaults to None.
+        ymap (np.array, optional): precomputed meshgrid map Y. Defaults to None.
+        rgb (np.array, optional): RGB imgae for colored point cloud. Defaults to None.
+        seg (np.array, optional): Segmentation image corresponding to the rgb image Defaults to None.
+        mask (np.arange, optional): Binary mask. 1 to keep. Defaults to None.
+
+    Returns:
+        Dict: Output is a dictionary with fields `xyz`, `rgb`, and `index`,
+        where `xyz` and `rgb` are Nx3 numpy arrays and `index` is a Nx1 array
+        to indicate which point is valid.
+    """
+    """convert depth image to point cloud"""
+    if rgb is not None:
+        assert rgb.shape[0] == depth.shape[0] and rgb.shape[1] == depth.shape[1]
+    if xmap is not None:
+        assert xmap.shape[0] == depth.shape[0] and xmap.shape[1] == depth.shape[1]
+    if ymap is not None:
+        assert ymap.shape[0] == depth.shape[0] and ymap.shape[1] == depth.shape[1]
+
+    im_height, im_width = depth.shape[0], depth.shape[1]
+
+    if xmap is None or ymap is None:
+        ww = np.linspace(0, im_width - 1, im_width)
+        hh = np.linspace(0, im_height - 1, im_height)
+        xmap, ymap = np.meshgrid(ww, hh)
+
+    pt2 = depth
+    pt0 = (xmap - cx) * pt2 / fx
+    pt1 = (ymap - cy) * pt2 / fy
+
+    mask_depth = np.ma.getmaskarray(np.ma.masked_greater(pt2, 0))
+    if mask is None:
+        mask = mask_depth
+    else:
+        mask_semantic = np.ma.getmaskarray(np.ma.masked_equal(mask, 1))
+        mask = mask_depth * mask_semantic
+
+    index = mask.flatten().nonzero()[0]
+
+    pt2_valid = pt2.flatten()[:, np.newaxis].astype(np.float32)
+    pt0_valid = pt0.flatten()[:, np.newaxis].astype(np.float32)
+    pt1_valid = pt1.flatten()[:, np.newaxis].astype(np.float32)
+    pc_xyz = np.concatenate((pt0_valid, pt1_valid, pt2_valid), axis=1)
+    if rgb is not None:
+        r = rgb[:, :, 0].flatten()[:, np.newaxis]
+        g = rgb[:, :, 1].flatten()[:, np.newaxis]
+        b = rgb[:, :, 2].flatten()[:, np.newaxis]
+        pc_rgb = np.concatenate((r, g, b), axis=1)
+    else:
+        pc_rgb = None
+
+    if seg is not None:
+        pc_seg = seg.flatten()[:, np.newaxis]
+    else:
+        pc_seg = None
+
+    return {"xyz": pc_xyz, "rgb": pc_rgb, "seg": pc_seg, "index": index}
+
+# Taken from GraspGen
+def depth_and_segmentation_to_point_clouds(
+    depth_image: np.ndarray,
+    segmentation_mask: np.ndarray,
+    fx: float,
+    fy: float,
+    cx: float,
+    cy: float,
+    rgb_image: np.ndarray = None,
+    target_object_id: int = 1,
+    remove_object_from_scene: bool = False,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Convert depth image and instance segmentation mask to scene and object point clouds.
+
+    Args:
+        depth_image: HxW depth image in meters
+        segmentation_mask: HxW instance segmentation mask with integer labels
+        fx, fy, cx, cy: Camera intrinsic parameters
+        rgb_image: HxWx3 RGB image (optional, for colored point clouds)
+        target_object_id: ID of the target object in the segmentation mask
+        remove_object_from_scene: If True, removes object points from scene point cloud
+
+    Returns:
+        scene_pc: Nx3 point cloud of the entire scene (excluding object if remove_object_from_scene=True)
+        object_pc: Mx3 point cloud of the target object only
+
+    Raises:
+        ValueError: If no target object found or multiple objects detected
+    """
+    # Check that segmentation mask contains the target object
+    unique_ids = np.unique(segmentation_mask)
+    if target_object_id not in unique_ids:
+        raise ValueError(
+            f"Target object ID {target_object_id} not found in segmentation mask. Available IDs: {unique_ids}"
+        )
+
+    # Check that only background (0) and one object (target_object_id) are present
+    non_background_ids = unique_ids[unique_ids != 0]
+    if len(non_background_ids) > 1:
+        raise ValueError(
+            f"Multiple objects detected in segmentation mask: {non_background_ids}. Please ensure only one object is present."
+        )
+
+    # Convert depth image to point cloud
+    pts_data = depth2points(
+        depth=depth_image,
+        fx=int(fx),
+        fy=int(fy),
+        cx=int(cx),
+        cy=int(cy),
+        rgb=rgb_image,
+        seg=segmentation_mask,
+    )
+
+    xyz = pts_data["xyz"]
+    rgb = pts_data["rgb"]
+    seg = pts_data["seg"]
+    index = pts_data["index"]
+
+    # Filter valid points (non-zero depth)
+    xyz_valid = xyz[index]
+    seg_valid = seg[index] if seg is not None else None
+    rgb_valid = rgb[index] if rgb is not None else None
+
+    # Scene point cloud (all valid points)
+    scene_pc = xyz_valid
+
+    # Object point cloud (only target object points)
+    if seg_valid is not None:
+        object_mask = seg_valid.flatten() == target_object_id
+        object_pc = xyz_valid[object_mask]
+
+        # Scene point cloud (optionally excluding object points)
+        if remove_object_from_scene:
+            scene_mask = ~object_mask  # Invert object mask to get scene-only points
+            scene_pc = xyz_valid[scene_mask]
+            print(
+                f"Removed {np.sum(object_mask)} object points from scene point cloud"
+            )
+    else:
+        raise ValueError("Segmentation data not available from depth2points")
+
+    if len(object_pc) == 0:
+        raise ValueError(f"No points found for target object ID {target_object_id}")
+
+    print(f"Scene point cloud: {len(scene_pc)} points")
+    print(f"Object point cloud: {len(object_pc)} points")
+
+    return scene_pc, object_pc
+
+# Taken from GraspGen
+def knn_points(X: torch.Tensor, K: int, norm: int):
+    """
+    Computes the K-nearest neighbors for each point in the point cloud X.
+
+    Args:
+        X: (N, 3) tensor representing the point cloud.
+        K: Number of nearest neighbors.
+
+    Returns:
+        dists: (N, K) tensor containing squared Euclidean distances to the K nearest neighbors.
+        idxs: (N, K) tensor containing indices of the K nearest neighbors.
+    """
+    N, _ = X.shape
+
+    # Compute pairwise squared Euclidean distances
+    dist_matrix = torch.cdist(X, X, p=norm)  # (N, N)
+
+    # Ignore self-distance (optional, but avoids trivial zero distance)
+    self_mask = torch.eye(N, device=X.device, dtype=torch.bool)
+    dist_matrix.masked_fill_(self_mask, float("inf"))  # Set self-distances to inf
+
+    # Get the indices of the K-nearest neighbors
+    dists, idxs = torch.topk(dist_matrix, K, dim=1, largest=False)
+
+    return dists, idxs
+
+# Taken from GraspGen
+def point_cloud_outlier_removal(
+    obj_pc: torch.Tensor, threshold: float = 0.009, K: int = 30
+) -> torch.Tensor:
+    """
+    Remove outliers from a point cloud. K-nearest neighbors is used to compute the distance to the nearest neighbor for each point.
+    If the distance is greater than a threshold, the point is considered an outlier and removed.
+
+    RANSAC can also be used.
+
+    Args:
+        obj_pc (torch.Tensor or np.ndarray): (N, 3) tensor or array representing the point cloud.
+        threshold (float): Distance threshold for outlier detection. Points with mean distance to K nearest neighbors greater than this threshold are removed.
+        K (int): Number of nearest neighbors to consider for outlier detection.
+
+    Returns:
+        Tuple[torch.Tensor, torch.Tensor]: Tuple containing filtered and removed point clouds.
+    """
+    # Convert numpy array to torch tensor if needed
+    if isinstance(obj_pc, np.ndarray):
+        obj_pc = torch.from_numpy(obj_pc)
+
+    obj_pc = obj_pc.float()
+    obj_pc = obj_pc.unsqueeze(0)
+
+    nn_dists, _ = knn_points(obj_pc[0], K=K, norm=1)
+
+    mask = nn_dists.mean(1) < threshold
+    filtered_pc = obj_pc[0, mask]
+    filtered_pc = filtered_pc.view(-1, 3)
+
+    return filtered_pc
+
+class GraspGeneratorNode(Node):
+    """
+    ROS2 node that listens for handover detection and generates grasp poses.
+    
+    Subscribes to:
+        - /handover_detected (Bool): Trigger for grasp generation
+        - /detected_objects (String): JSON string of detected objects
+    
+    Publishes to:
+        - /gripper_goal_pose (PoseStamped): Computed grasp pose
+    """
+        
+    def __init__(self):
+        super().__init__('grasp_generator_node')
+        
+        self.use_cam_perspective = self.declare_parameter('camera_perspective', False).get_parameter_value().bool_value
+        
+        if self.use_cam_perspective:
+            self.target_frame = 'left_color_optical_frame'
+            self.source_frame = 'right_color_optical_frame'
+        else:
+            self.target_frame = 'base'
+            self.source_frame_left = 'left_color_optical_frame'
+            self.source_frame_right = 'right_color_optical_frame'
+            
+        # Initialize CV Bridge for image conversion
+        self.bridge = CvBridge()
+        
+        # Storage for latest images
+        self.latest_color_left = None
+        self.latest_depth_left = None
+        self.latest_color_right = None
+        self.latest_depth_right = None
+        self.left_detected_objects = []
+        self.right_detected_objects = []
+        
+        # Flag to prevent multiple simultaneous requests
+        self.processing = False
+        self.camera_initialized = False
+        
+        # Subscribers
+        self.left_cam_info_sub = self.create_subscription(
+            sensor_msgs.CameraInfo,
+            '/camera/left/color/camera_info', 
+            self.left_camera_info_callback, 
+            10
+        )
+        self.right_cam_info_sub = self.create_subscription(
+            sensor_msgs.CameraInfo,
+            '/camera/right/color/camera_info', 
+            self.right_camera_info_callback, 
+            10
+        )
+        self.stop_detector_sub = self.create_subscription(
+            Bool,
+            '/left/handover_detected',
+            self.stop_detector_callback,
+            10
+        )
+        self.left_obj_detection_sub = self.create_subscription(
+            String,
+            '/left/detected_objects',
+            self.left_obj_detection_callback,
+            10)
+        self.right_obj_detection_sub = self.create_subscription(
+            String,
+            '/right/detected_objects',
+            self.right_obj_detection_callback,
+            10)
+        self.left_rgbd_sub = self.create_subscription(
+            RGBD,
+            '/camera/left/rgbd',
+            self.left_rgbd_callback,
+            10)
+        self.right_rgbd_sub = self.create_subscription(
+            RGBD,
+            '/camera/right/rgbd',
+            self.right_rgbd_callback,
+            10)
+        # Publisher for gripper goal pose
+        self.pose_pub = self.create_publisher(
+            PoseStamped,
+            '/gripper_goal_pose',
+            10
+        )
+
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+
+        self.bridge = CvBridge()
+        self.sam_socket_path = "/tmp/sam3_socket"
+        self.grasp_socket_path = "/tmp/graspgen"
+        
+        self.get_logger().info('Grasp Generator Node initialized')
+        self.get_logger().info('Waiting for handover detection...')
+    
+    def left_camera_info_callback(self, msg):
+        self.lfx = msg.k[0]
+        self.lfy = msg.k[4]
+        self.lcx = msg.k[2]
+        self.lcy = msg.k[5]
+        self.camera_initialized = True
+        self.get_logger().info(f"Camera intrinsics received: fx={self.lfx}, fy={self.lfy}, cx={self.lcx}, cy={self.lcy}")
+        # Unsubscribe after getting intrinsics
+        self.destroy_subscription(self.left_cam_info_sub)
+
+    def right_camera_info_callback(self, msg):
+        self.rfx = msg.k[0]
+        self.rfy = msg.k[4]
+        self.rcx = msg.k[2]
+        self.rcy = msg.k[5]
+        self.camera_initialized = True
+        self.get_logger().info(f"Camera intrinsics received: fx={self.rfx}, fy={self.rfy}, cx={self.rcx}, cy={self.rcy}")
+        # Unsubscribe after getting intrinsics
+        self.destroy_subscription(self.right_cam_info_sub)
+
+    def _get_most_confident_detection(self, right=False):
+        if right:
+            detected_objects = self.right_detected_objects
+        else:
+            detected_objects = self.left_detected_objects
+
+        if len(detected_objects) == 0:
+            return None
+
+        most_confident = max(detected_objects, key=lambda x: x.get('conf', 0))
+        return most_confident
+
+    def left_obj_detection_callback(self, msg):
+        # Here we would parse the message to extract detected objects
+        try:
+            detections = json.loads(msg.data)
+            self.left_detected_objects = detections
+            if len(detections) > 0:
+                self.objects_detected = True
+                # self.get_logger().info(f"Detected objects: {detections}")
+            else:
+                self.objects_detected = False
+        except json.JSONDecodeError as e:
+            self.get_logger().error(f"Failed to decode detection message: {e}")
+    
+    def right_obj_detection_callback(self, msg):
+        # Here we would parse the message to extract detected objects
+        try:
+            detections = json.loads(msg.data)
+            self.right_detected_objects = detections
+            if len(detections) > 0:
+                self.objects_detected = True
+                # self.get_logger().info(f"Detected objects: {detections}")
+            else:
+                self.objects_detected = False
+        except json.JSONDecodeError as e:
+            self.get_logger().error(f"Failed to decode detection message: {e}")
+
+    def left_rgbd_callback(self, msg):
+        self.latest_color_left = self.bridge.imgmsg_to_cv2(msg.rgb, "rgb8")
+        self.latest_depth_left = self.bridge.imgmsg_to_cv2(msg.depth, "32FC1") / 1e3
+    
+    def right_rgbd_callback(self, msg):
+        self.latest_color_right = self.bridge.imgmsg_to_cv2(msg.rgb, "rgb8")
+        self.latest_depth_right = self.bridge.imgmsg_to_cv2(msg.depth, "32FC1") / 1e3
+
+    def request_segmentation_mask(self, color_image, bbox, label):
+        h, w, _ = color_image.shape
+
+        label_len = len(label)
+        x1, y1, x2, y2 = bbox
+
+        try:
+            client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            client.connect(self.sam_socket_path)
+
+            # Send Header: H, W, x1, y1, x2, y2, label_len
+            header = np.array([h, w, x1, y1, x2, y2, label_len], dtype=np.int32)
+            client.sendall(header.tobytes())
+            client.sendall(label.encode())
+
+            # Send Image
+            client.sendall(color_image.tobytes())
+
+            # Receive Mask (size is H*W bytes for uint8)
+            mask_data = b""
+            while len(mask_data) < (h * w):
+                mask_data += client.recv((h * w) - len(mask_data))
+            
+            mask = np.frombuffer(mask_data, dtype=np.uint8).reshape((h, w))
+            
+            self.get_logger().info("Mask received successfully")
+
+        except Exception as e:
+            self.get_logger().error(f"Failed to connect to SAM3 server: {e}")
+        finally:
+            client.close()
+
+        mask = mask.astype(bool).astype(np.uint8)
+        # debug: dump segmentation mask request image
+        cv2.imwrite('debug_sam3_request_mask.png', mask * 255)
+        return mask
+    
+    def stop_detector_callback(self, msg):
+        """
+        Triggered when stop is detected.
+        Executes grasp generation pipeline.
+        """
+        if not msg.data:
+            return  # Only process when stop is detected (True)
+        
+        if self.processing:
+            self.get_logger().warn('Already processing a grasp request, ignoring...')
+            return
+        
+        self.get_logger().info('Stop detected! Generating grasp...')
+
+        latest_left_detection = self._get_most_confident_detection(right=False)
+        latest_right_detection = self._get_most_confident_detection(right=True)
+        if latest_left_detection is None or latest_right_detection is None:
+            return
+        if self.latest_color_left is None or self.latest_depth_left is None:
+            return
+        if self.latest_color_right is None or self.latest_depth_right is None:
+            return
+        
+        self.processing = True
+        label = latest_left_detection['class']
+        bbox_left = latest_left_detection['bbox']
+        bbox_right = latest_right_detection['bbox']
+        color_left = self.latest_color_left
+        depth_left = self.latest_depth_left
+        color_right = self.latest_color_right
+        depth_right = self.latest_depth_right
+
+        try:
+            # Check if we have all required data
+            if color_left is None or color_right is None:
+                self.get_logger().error('No color images available')
+                return
+            print('requesting segmentation mask from SAM3...')
+            mask_left = self.request_segmentation_mask(color_left, bbox_left, label)
+            print('requesting segmentation mask from SAM3...')
+            mask_right = self.request_segmentation_mask(color_right, bbox_right, label)
+            print('segmentation masks received')
+            if mask_left is None or mask_right is None:
+                self.get_logger().error('No mask image available')
+                return
+            
+            # Validate dimensions
+            if depth_left.shape != mask_left.shape:
+                self.get_logger().error(
+                    f'Dimension mismatch! Depth {depth_left.shape} vs Mask {mask_left.shape}'
+                )
+                return
+            
+            h, w = depth_left.shape
+            depth_left = depth_left.astype(np.float32).reshape((h, w))
+            
+            try:
+                scene_pc_left, object_pc_left = depth_and_segmentation_to_point_clouds(
+                    depth_image=depth_left, 
+                    segmentation_mask=mask_left,
+                    fx=self.lfx, fy=self.lfy, cx=self.lcx, cy=self.lcy, 
+                    target_object_id=1, 
+                    remove_object_from_scene=True
+                )
+                self.get_logger().info(f'Generated point clouds (left): scene={scene_pc_left.shape}, object={object_pc_left.shape}')
+            except Exception as e:
+                self.get_logger().error(f'Failed to generate point clouds: {str(e)}')
+                return None
+            
+            object_pc_left_torch = torch.from_numpy(object_pc_left).float()
+            object_pc_left = point_cloud_outlier_removal(object_pc_left_torch)
+            object_pc_left = object_pc_left.cpu().numpy()
+            
+            try:
+                scene_pc_right, object_pc_right = depth_and_segmentation_to_point_clouds(
+                    depth_image=depth_right, 
+                    segmentation_mask=mask_right,
+                    fx=self.rfx, fy=self.rfy, cx=self.rcx, cy=self.rcy, 
+                    target_object_id=1, 
+                    remove_object_from_scene=True
+                )
+                self.get_logger().info(f'Generated point clouds (right): scene={scene_pc_right.shape}, object={object_pc_right.shape}')
+            except Exception as e:
+                self.get_logger().error(f'Failed to generate point clouds: {str(e)}')
+                return None
+            
+            object_pc_right_torch = torch.from_numpy(object_pc_right).float()
+            object_pc_right = point_cloud_outlier_removal(object_pc_right_torch)
+            object_pc_right = object_pc_right.cpu().numpy()
+            
+            # transform right camera point cloud to left camera frame (using received extrinsic transform from right to left)
+            if self.use_cam_perspective:
+                try:
+                    t = self.tf_buffer.lookup_transform(
+                    target_frame=self.target_frame,
+                    source_frame=self.source_frame,
+                    time=rclpy.time.Time(),
+                    timeout=rclpy.duration.Duration(seconds=0.1))
+                except TransformException as ex:
+                    self.get_logger().info(
+                        f'Could not find transform from {self.source_frame} to {self.target_frame}: {ex}')
+                    return
+            
+                pcd_right_to_left = o3d.geometry.PointCloud()
+                pcd_right_to_left.points = o3d.utility.Vector3dVector(scene_pc_right)
+                tf_matrix = np.eye(4)
+                tf_matrix[:3, :3] = Rotation.from_quat([
+                    t.transform.rotation.x,
+                    t.transform.rotation.y,
+                    t.transform.rotation.z,
+                    t.transform.rotation.w
+                ]).as_matrix()
+                tf_matrix[:3, 3] = [t.transform.translation.x, t.transform.translation.y, t.transform.translation.z]
+                pcd_right_to_left.transform(tf_matrix)
+                scene_pc_right = np.asarray(pcd_right_to_left.points)
+                # merge left and transformed right point clouds
+                # merged_scene_pc = np.vstack((scene_pc_left, np.asarray(pcd_right_to_left.points)))
+                pcd_right_to_left.points = o3d.utility.Vector3dVector(object_pc_right)
+                pcd_right_to_left.transform(tf_matrix)
+                object_pc_right = np.asarray(pcd_right_to_left.points)
+                # merged_object_pc = np.vstack((object_pc_left, np.asarray(pcd_right_to_left.points)))
+            else:
+                try:
+                    t_left = self.tf_buffer.lookup_transform(
+                    target_frame=self.target_frame,
+                    source_frame=self.source_frame_left,
+                    time=rclpy.time.Time(),
+                    timeout=rclpy.duration.Duration(seconds=0.1))
+                except TransformException as ex:
+                    self.get_logger().info(
+                        f'Could not find transform from {self.source_frame_left} to {self.target_frame}: {ex}')
+                    return
+                try:                    
+                    t_right = self.tf_buffer.lookup_transform(
+                    target_frame=self.target_frame,
+                    source_frame=self.source_frame_right,
+                    time=rclpy.time.Time())
+                except TransformException as ex:
+                    self.get_logger().info(
+                        f'Could not find transform from {self.source_frame_right} to {self.target_frame}: {ex}')
+                    return
+                
+                pcd_left_to_base = o3d.geometry.PointCloud()
+                pcd_left_to_base.points = o3d.utility.Vector3dVector(scene_pc_left)
+                tf_matrix_left = np.eye(4)
+                tf_matrix_left[:3, :3] = Rotation.from_quat([
+                    t_left.transform.rotation.x,
+                    t_left.transform.rotation.y,
+                    t_left.transform.rotation.z,
+                    t_left.transform.rotation.w
+                ]).as_matrix()
+                tf_matrix_left[:3, 3] = [t_left.transform.translation.x, t_left.transform.translation.y, t_left.transform.translation.z]
+                pcd_left_to_base.transform(tf_matrix_left)
+                scene_pc_left = np.asarray(pcd_left_to_base.points)
+                pcd_left_to_base.points = o3d.utility.Vector3dVector(object_pc_left)
+                pcd_left_to_base.transform(tf_matrix_left)
+                object_pc_left = np.asarray(pcd_left_to_base.points)
+                pcd_right_to_base = o3d.geometry.PointCloud()
+                pcd_right_to_base.points = o3d.utility.Vector3dVector(scene_pc_right)
+                tf_matrix_right = np.eye(4)
+                tf_matrix_right[:3, :3] = Rotation.from_quat([
+                    t_right.transform.rotation.x,
+                    t_right.transform.rotation.y,
+                    t_right.transform.rotation.z,
+                    t_right.transform.rotation.w
+                ]).as_matrix()
+                tf_matrix_right[:3, 3] = [t_right.transform.translation.x, t_right.transform.translation.y, t_right.transform.translation.z]
+                pcd_right_to_base.transform(tf_matrix_right)
+                scene_pc_right = np.asarray(pcd_right_to_base.points)
+                pcd_right_to_base.points = o3d.utility.Vector3dVector(object_pc_right)
+                pcd_right_to_base.transform(tf_matrix_right)
+                object_pc_right = np.asarray(pcd_right_to_base.points)
+            
+            merged_scene_pc = np.vstack((scene_pc_left, scene_pc_right))
+            merged_object_pc = np.vstack((object_pc_left, object_pc_right))
+            # Send grasp request via Unix socket
+            grasp_matrix = self.send_grasp_request(merged_scene_pc, merged_object_pc)
+            
+            if grasp_matrix is not None:
+                # Convert to PoseStamped and publish
+                pose_msg = self.matrix_to_pose_stamped(grasp_matrix)
+                self.pose_pub.publish(pose_msg)
+                
+                # Log the result
+                pos = grasp_matrix[:3, 3]
+                self.get_logger().info(
+                    f'Grasp pose published - Position: [{pos[0]:.4f}, {pos[1]:.4f}, {pos[2]:.4f}]'
+                )
+            else:
+                self.get_logger().warn('No valid grasp found')
+                
+        except Exception as e:
+            self.get_logger().error(f'Error in grasp generation: {str(e)}')
+        finally:
+            self.processing = False
+            exit(0) # debug
+    
+    def send_grasp_request(self, scene_pc, object_pc):
+        """
+        Send grasp generation request via Unix socket.
+        
+        Generates scene and object point clouds from depth and mask,
+        then sends them to the grasp server.
+        
+        Args:
+            depth_map: numpy array of float32 depth values (H, W)
+            mask: numpy array of uint8 mask values (H, W)
+            
+        Returns:
+            4x4 numpy array representing the grasp pose, or None if failed
+        """
+        if not os.path.exists(self.grasp_socket_path):
+            self.get_logger().error(
+                f'Socket {self.grasp_socket_path} not found. Is the grasp server running?'
+            )
+            return None
+        
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        
+        try:
+            client.connect(self.grasp_socket_path)
+            
+            # Protocol:
+            # 1. Send Header (scene_pc_size, object_pc_size) - 2 int32 values
+            # 2. Send scene_pc (Nx3 float32 data)
+            # 3. Send object_pc (Mx3 float32 data)
+            
+            scene_size = scene_pc.shape[0]
+            object_size = object_pc.shape[0]
+            
+            header = np.array([scene_size, object_size], dtype=np.int32)
+            client.sendall(header.tobytes())
+            
+            # Send scene point cloud
+            client.sendall(scene_pc.astype(np.float32).tobytes())
+            
+            # Send object point cloud
+            client.sendall(object_pc.astype(np.float32).tobytes())
+            
+            # Receive Result (64 bytes for 4x4 matrix)
+            response = b""
+            while len(response) < 64:
+                chunk = client.recv(64 - len(response))
+                if not chunk:
+                    break
+                response += chunk
+            
+            if len(response) == 64:
+                grasp_matrix = np.frombuffer(response, dtype=np.float32).reshape((4, 4))
+                
+                # Check if the server returned a zero matrix (no valid grasp)
+                if np.all(grasp_matrix == 0):
+                    self.get_logger().warn('Server returned no valid grasp (zero matrix)')
+                    return None
+                
+                self.get_logger().info('Received grasp matrix from server')
+                self.get_logger().debug(f'\n{grasp_matrix}')
+                return grasp_matrix
+            else:
+                self.get_logger().error(
+                    f'Received {len(response)} bytes, expected 64'
+                )
+                return None
+                
+        except Exception as e:
+            self.get_logger().error(f'Socket communication error: {str(e)}')
+            return None
+        finally:
+            client.close()
+    
+    def matrix_to_pose_stamped(self, matrix):
+        """
+        Convert a 4x4 transformation matrix to a PoseStamped message.
+        
+        Args:
+            matrix: 4x4 numpy array representing the pose
+            
+        Returns:
+            PoseStamped message
+        """
+        pose_msg = PoseStamped()
+        pose_msg.header.stamp = self.get_clock().now().to_msg()
+        pose_msg.header.frame_id = self.target_frame  # The frame in which the grasp pose is defined
+        
+        # Extract position (translation vector)
+        pose_msg.pose.position.x = float(matrix[0, 3])
+        pose_msg.pose.position.y = float(matrix[1, 3])
+        pose_msg.pose.position.z = float(matrix[2, 3])
+        
+        # Extract orientation (rotation matrix to quaternion)
+        rotation_matrix = matrix[:3, :3]
+        rotation = Rotation.from_matrix(rotation_matrix)
+        quat = rotation.as_quat()  # Returns [x, y, z, w]
+        
+        pose_msg.pose.orientation.x = float(quat[0])
+        pose_msg.pose.orientation.y = float(quat[1])
+        pose_msg.pose.orientation.z = float(quat[2])
+        pose_msg.pose.orientation.w = float(quat[3])
+        
+        return pose_msg
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = GraspGeneratorNode()
+    
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

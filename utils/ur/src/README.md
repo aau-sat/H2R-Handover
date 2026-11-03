@@ -1,0 +1,5 @@
+# Important Code Changes
+
+This H2R Handover system utilizes Robotiq 2F-140 gripper. The repository contains a git submodule for the Robotiq ROS2 driver and description files. The submodule is initialized to the `utils/ur/src/ros2_robotiq_gripper` folder and is used during runtime.
+However, the team lead had to later modify the drivers and description files in the corresponding folder to accomodate feedback-driven gripper control. The changes are contained in the `utils/ur/src/ros2_robotiq_gripper/robotiq_description` and `utils/ur/src/ros2_robotiq_gripper/robotiq_driver` folders and are exported to the folder `utils/ur/src/ros2_robotiq_gripper_modified` respectively. 
+If this repository's motion control branch is set up on a new machine, simply replace the initialized submodule's folders with the ones in `utils/ur/src/ros2_robotiq_gripper_modified` to ensure the modified drivers and description files are used.

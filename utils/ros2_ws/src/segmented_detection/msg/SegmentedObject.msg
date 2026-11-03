@@ -1,0 +1,3 @@
+string view
+string segmentation_label
+sensor_msgs/Image segmentation_mask

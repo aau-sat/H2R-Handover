@@ -1,0 +1,8 @@
+
+ultralytics==8.3.235
+ultralytics-thop==2.0.18
+inference==0.63.5
+supervision==0.27.0
+opencv-python==4.10.0.84
+boxmot==16.0.11
+mediapipe==0.10.21

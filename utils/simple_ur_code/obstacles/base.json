@@ -1,0 +1,16 @@
+{
+    "id": "base_box",
+    "frame_id": "base_link",
+    "primitives": [
+        {
+            "type": "BOX",
+            "dimensions": [1.40, 0.80, 0.9]
+        }
+    ],
+    "pose": {
+        "position": {"x": 0.0, "y": -0.17, "z": -0.451},
+        "orientation": {"x": 0.0, "y": 0.0, "z": -0.7071, "w": 0.7071}
+    },
+    "operation": "ADD",
+    "attached": false
+}

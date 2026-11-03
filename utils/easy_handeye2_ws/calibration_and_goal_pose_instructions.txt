@@ -1,0 +1,32 @@
+EXTRINSIC CALIBRATION AND COMPUTATION OF A GOAL POSE
+
+Our goal is to send a goal pose to the robot corresponding to the grasping pose.
+
+To do that, we need to have the calibraition between camera and robot.
+If you need to do the calibration again, do this:
+- TERMINAL 1: launch the realsense camera setup with: $ ros2 launch realsense2_camera rs_launch.py
+- TERMINAL 2: run the script aruco7.py in the easy_handeye2_ws workspace. This should spawn the camera image and publish the pose of the calibration board.
+- TERMINAL 3: launch the calibration algorithm with: $ ros2 launch test.launch.xml
+
+The calibration GUI will pop up. Take a sample for every waypoint that you find on the calibration routine program on the teach pendant of the UR. Some of the waypoints might not be good for your camera position, so feel free to create a new routine. You can double check in the camera image if the frame of the board is not too jumpy.
+After 7-10 samples the calibration result should converge. Take as much as you need. When you are satisfied, click on the Save button.
+This will create a my_eob_calib.calib file in .ros2
+
+...
+
+
+
+If you already have the calibration:
+- Publish the static TF result of the calibration with:
+$ ros2 launch easy_handeye2 publish.launch.py name:=my_eob_calib
+
+- Run the file compute_goal_pose.py in the easy_handeye2_ws workspace
+
+This should now be publishing the goal pose corresponding to the pose of the calibration board. 
+You should change in the compute_goal_pose.py the topic that the code listens to for the goal. It will be grasp gen or object pose or whatever.
+
+IMPORTANT: the calibration is from base to camera_optical. Make sure that, if you use then Moveit to send the goal, this is specified also with respect 
+to base and not world or base_link
+
+
+IMPORTANT: neutral orientation (wrt base): RX 0.088, RY 2.307, RZ -2.128 (all radians)

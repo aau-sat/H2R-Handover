@@ -1,0 +1,436 @@
+[
+    {
+        "label": "Base_Gripper",
+        "fz_raw": 32.1858,
+        "fz_expected": 13.87,
+        "roll_deg": 179.841854436083,
+        "timestamp": 1775550933.9007227
+    },
+    {
+        "label": "Mount_Only",
+        "fz_raw": 32.887299999999954,
+        "fz_expected": 13.4045,
+        "roll_deg": 179.83962693594893,
+        "timestamp": 1775550959.7795956
+    },
+    {
+        "label": "Mount+10g",
+        "fz_raw": 32.990599999999986,
+        "fz_expected": 13.5045,
+        "roll_deg": 179.84070994787322,
+        "timestamp": 1775550981.2427945
+    },
+    {
+        "label": "Mount+20g",
+        "fz_raw": 33.0164,
+        "fz_expected": 13.6045,
+        "roll_deg": 179.83949368904698,
+        "timestamp": 1775550998.9422922
+    },
+    {
+        "label": "Mount+30g",
+        "fz_raw": 33.11900000000002,
+        "fz_expected": 13.7045,
+        "roll_deg": 179.84088444272268,
+        "timestamp": 1775551013.1481984
+    },
+    {
+        "label": "Mount+40g",
+        "fz_raw": 33.10420000000002,
+        "fz_expected": 13.8045,
+        "roll_deg": 179.83893132899328,
+        "timestamp": 1775551028.9907806
+    },
+    {
+        "label": "Mount+50g",
+        "fz_raw": 33.3617,
+        "fz_expected": 13.9045,
+        "roll_deg": 179.84202263009027,
+        "timestamp": 1775551168.5705435
+    },
+    {
+        "label": "Mount+60g",
+        "fz_raw": 33.35390000000001,
+        "fz_expected": 14.00,
+        "roll_deg": 179.84276951614342,
+        "timestamp": 1775551182.7368627
+    },
+    {
+        "label": "Mount+70g",
+        "fz_raw": 33.418800000000005,
+        "fz_expected": 14.1,
+        "roll_deg": 179.84096928426243,
+        "timestamp": 1775551200.586307
+    },
+    {
+        "label": "Mount+80g",
+        "fz_raw": 33.69260000000001,
+        "fz_expected": 14.2,
+        "roll_deg": 179.84013880379075,
+        "timestamp": 1775551223.3604739
+    },
+    {
+        "label": "Mount+90g",
+        "fz_raw": 33.8172,
+        "fz_expected": 14.3,
+        "roll_deg": 179.84179900457963,
+        "timestamp": 1775551238.57451
+    },
+    {
+        "label": "Mount+100g",
+        "fz_raw": 33.917100000000005,
+        "fz_expected": 14.4,
+        "roll_deg": 179.84004522871203,
+        "timestamp": 1775551256.8638492
+    },
+    {
+        "label": "Mount+110g",
+        "fz_raw": 33.897200000000005,
+        "fz_expected": 14.5,
+        "roll_deg": 179.84098820704764,
+        "timestamp": 1775551271.6725657
+    },
+    {
+        "label": "Mount+120g",
+        "fz_raw": 34.126099999999994,
+        "fz_expected": 14.6,
+        "roll_deg": 179.84420631340828,
+        "timestamp": 1775551385.281494
+    },
+    {
+        "label": "Mount+130g",
+        "fz_raw": 34.21629999999998,
+        "fz_expected": 14.7,
+        "roll_deg": 179.84413624769263,
+        "timestamp": 1775551400.2084649
+    },
+    {
+        "label": "Mount+140g",
+        "fz_raw": 34.2607,
+        "fz_expected": 14.8,
+        "roll_deg": 179.841002716732,
+        "timestamp": 1775551416.2390668
+    },
+    {
+        "label": "Mount+150g",
+        "fz_raw": 34.4113,
+        "fz_expected": 14.9,
+        "roll_deg": 179.84171971072547,
+        "timestamp": 1775551449.454494
+    },
+    {
+        "label": "Mount+160g",
+        "fz_raw": 34.515100000000025,
+        "fz_expected": 15.0,
+        "roll_deg": 179.84155106641975,
+        "timestamp": 1775551480.3684978
+    },
+    {
+        "label": "Mount+170g",
+        "fz_raw": 34.632300000000015,
+        "fz_expected": 15.1,
+        "roll_deg": 179.84501081600442,
+        "timestamp": 1775551495.2943263
+    },
+    {
+        "label": "Mount+180g",
+        "fz_raw": 34.71280000000001,
+        "fz_expected": 15.2,
+        "roll_deg": 179.8406430803337,
+        "timestamp": 1775551536.3606987
+    },
+    {
+        "label": "Mount+190g",
+        "fz_raw": 34.85959999999999,
+        "fz_expected": 15.3,
+        "roll_deg": 179.839944303985,
+        "timestamp": 1775551550.3945074
+    },
+    {
+        "label": "Mount+200g",
+        "fz_raw": 34.940499999999986,
+        "fz_expected": 15.4,
+        "roll_deg": 179.8411709938325,
+        "timestamp": 1775551569.9484568
+    },
+    {
+        "label": "Mount+210g",
+        "fz_raw": 35.050200000000004,
+        "fz_expected": 15.5,
+        "roll_deg": 179.84194458496538,
+        "timestamp": 1775551584.6866941
+    },
+    {
+        "label": "Mount+220g",
+        "fz_raw": 35.22580000000002,
+        "fz_expected": 15.6,
+        "roll_deg": 179.84149487880745,
+        "timestamp": 1775551637.6304379
+    },
+    {
+        "label": "Mount+230g",
+        "fz_raw": 35.47379999999997,
+        "fz_expected": 15.7,
+        "roll_deg": 179.84427710878776,
+        "timestamp": 1775551652.392396
+    },
+    {
+        "label": "Mount+240g",
+        "fz_raw": 35.51999999999998,
+        "fz_expected": 15.8,
+        "roll_deg": 179.83887087711216,
+        "timestamp": 1775551679.9662235
+    },
+    {
+        "label": "Mount+250g",
+        "fz_raw": 35.575500000000005,
+        "fz_expected": 15.9,
+        "roll_deg": 179.83901355560565,
+        "timestamp": 1775551698.118398
+    },
+    {
+        "label": "Mount+260g",
+        "fz_raw": 35.6427,
+        "fz_expected": 16.0,
+        "roll_deg": 179.842753635354,
+        "timestamp": 1775551710.5879786
+    },
+    {
+        "label": "Mount+270g",
+        "fz_raw": 35.788800000000016,
+        "fz_expected": 16.1,
+        "roll_deg": 179.84103037704702,
+        "timestamp": 1775551737.2004373
+    },
+    {
+        "label": "Mount+280g",
+        "fz_raw": 36.174599999999984,
+        "fz_expected": 16.2,
+        "roll_deg": 179.84264761387678,
+        "timestamp": 1775551968.2825432
+    },
+    {
+        "label": "Mount+290g",
+        "fz_raw": 36.22789999999998,
+        "fz_expected": 16.3,
+        "roll_deg": 179.84220767937387,
+        "timestamp": 1775551986.1585145
+    },
+    {
+        "label": "Mount+300g",
+        "fz_raw": 36.31960000000001,
+        "fz_expected": 16.4,
+        "roll_deg": 179.84182547728528,
+        "timestamp": 1775552040.8946896
+    },
+    {
+        "label": "Mount+310g",
+        "fz_raw": 36.471799999999995,
+        "fz_expected": 16.5,
+        "roll_deg": 179.84108851630776,
+        "timestamp": 1775552057.7324357
+    },
+    {
+        "label": "Mount+320g",
+        "fz_raw": 36.53510000000001,
+        "fz_expected": 16.6,
+        "roll_deg": 179.83920013561004,
+        "timestamp": 1775552075.675975
+    },
+    {
+        "label": "Mount+330g",
+        "fz_raw": 36.665200000000006,
+        "fz_expected": 16.7,
+        "roll_deg": 179.84231622697644,
+        "timestamp": 1775552097.3300314
+    },
+    {
+        "label": "Mount+340g",
+        "fz_raw": 36.712100000000014,
+        "fz_expected": 16.8,
+        "roll_deg": 179.83817900796257,
+        "timestamp": 1775552114.4467196
+    },
+    {
+        "label": "Mount+350g",
+        "fz_raw": 36.76060000000003,
+        "fz_expected": 16.9,
+        "roll_deg": 179.8394751400262,
+        "timestamp": 1775552132.4125912
+    },
+    {
+        "label": "Mount+360g",
+        "fz_raw": 36.9025,
+        "fz_expected": 17.0,
+        "roll_deg": 179.84088230818386,
+        "timestamp": 1775552144.8173997
+    },
+    {
+        "label": "Mount+370g",
+        "fz_raw": 37.05790000000001,
+        "fz_expected": 17.1,
+        "roll_deg": 179.83888373548717,
+        "timestamp": 1775552160.3800018
+    },
+    {
+        "label": "Mount+380g",
+        "fz_raw": 37.11669999999998,
+        "fz_expected": 17.2,
+        "roll_deg": 179.83987267923592,
+        "timestamp": 1775552171.8705866
+    },
+    {
+        "label": "Mount+390g",
+        "fz_raw": 37.21959999999999,
+        "fz_expected": 17.3,
+        "roll_deg": 179.8408706366786,
+        "timestamp": 1775552186.6685565
+    },
+    {
+        "label": "Mount+400g",
+        "fz_raw": 37.23940000000001,
+        "fz_expected": 17.4,
+        "roll_deg": 179.83899467744683,
+        "timestamp": 1775552209.7768981
+    },
+    {
+        "label": "Mount+410g",
+        "fz_raw": 37.36739999999998,
+        "fz_expected": 17.5,
+        "roll_deg": 179.84090652606932,
+        "timestamp": 1775552222.9505432
+    },
+    {
+        "label": "Mount+420g",
+        "fz_raw": 37.42549999999999,
+        "fz_expected": 17.6,
+        "roll_deg": 179.8398062070816,
+        "timestamp": 1775552236.7446518
+    },
+    {
+        "label": "Mount+430g",
+        "fz_raw": 37.55720000000002,
+        "fz_expected": 17.7,
+        "roll_deg": 179.84083345097798,
+        "timestamp": 1775552249.382567
+    },
+    {
+        "label": "Mount+440g",
+        "fz_raw": 37.73379999999998,
+        "fz_expected": 17.8,
+        "roll_deg": 179.83800553363312,
+        "timestamp": 1775552262.3994646
+    },
+    {
+        "label": "Mount+450g",
+        "fz_raw": 37.896300000000004,
+        "fz_expected": 17.9,
+        "roll_deg": 179.83797114262953,
+        "timestamp": 1775552277.838647
+    },
+    {
+        "label": "Mount+500g",
+        "fz_raw": 38.39699999999999,
+        "fz_expected": 18.3,
+        "roll_deg": 179.8388232560924,
+        "timestamp": 1775552297.7988758
+    },
+    {
+        "label": "Mount+510g",
+        "fz_raw": 38.43989999999997,
+        "fz_expected": 18.4,
+        "roll_deg": 179.8372099472362,
+        "timestamp": 1775552311.9819353
+    },
+    {
+        "label": "Mount+520g",
+        "fz_raw": 38.444299999999984,
+        "fz_expected": 18.5,
+        "roll_deg": 179.84204913696595,
+        "timestamp": 1775552327.2454548
+    },
+    {
+        "label": "Mount+530g",
+        "fz_raw": 38.6104,
+        "fz_expected": 18.6,
+        "roll_deg": 179.8383267919197,
+        "timestamp": 1775552340.7096205
+    },
+    {
+        "label": "Mount+540g",
+        "fz_raw": 38.673199999999994,
+        "fz_expected": 18.7,
+        "roll_deg": 179.8432986111865,
+        "timestamp": 1775552356.320847
+    },
+    {
+        "label": "Mount+550g",
+        "fz_raw": 38.6866,
+        "fz_expected": 18.8,
+        "roll_deg": 179.8395293820063,
+        "timestamp": 1775552372.9644525
+    },
+    {
+        "label": "Mount+560g",
+        "fz_raw": 38.70249999999999,
+        "fz_expected": 18.9,
+        "roll_deg": 179.83818271857774,
+        "timestamp": 1775552384.3483331
+    },
+    {
+        "label": "Mount+570g",
+        "fz_raw": 38.9186,
+        "fz_expected": 19.0,
+        "roll_deg": 179.83791990365523,
+        "timestamp": 1775552397.486661
+    },
+    {
+        "label": "Mount+580g",
+        "fz_raw": 39.11779999999998,
+        "fz_expected": 19.1,
+        "roll_deg": 179.8406952052968,
+        "timestamp": 1775552410.476355
+    },
+    {
+        "label": "Mount+590g",
+        "fz_raw": 39.196,
+        "fz_expected": 19.2,
+        "roll_deg": 179.8407940176801,
+        "timestamp": 1775552425.6680458
+    },
+    {
+        "label": "Mount+600g",
+        "fz_raw": 39.21949999999999,
+        "fz_expected": 19.3,
+        "roll_deg": 179.83915112356593,
+        "timestamp": 1775552569.7263503
+    },
+    {
+        "label": "Mount+610g",
+        "fz_raw": 39.3463,
+        "fz_expected": 19.4,
+        "roll_deg": 179.84174933834032,
+        "timestamp": 1775552585.4835181
+    },
+    {
+        "label": "Mount+620g",
+        "fz_raw": 39.3777,
+        "fz_expected": 19.5,
+        "roll_deg": 179.83930206712947,
+        "timestamp": 1775552600.5486317
+    },
+    {
+        "label": "Mount+630g",
+        "fz_raw": 39.49879999999997,
+        "fz_expected": 19.6,
+        "roll_deg": 179.83895903454658,
+        "timestamp": 1775552614.222162
+    },
+    {
+        "label": "Mount+640g",
+        "fz_raw": 39.65399999999996,
+        "fz_expected": 19.7,
+        "roll_deg": 179.84126233833155,
+        "timestamp": 1775552628.9621608
+    }
+]

@@ -1,0 +1,25 @@
+[submodule "utils/segmentation/sam3"]
+	path = utils/segmentation/sam3
+	url = https://github.com/facebookresearch/sam3.git
+[submodule "utils/ur/src/ros2_robotiq_gripper"]
+	path = utils/ur/src/ros2_robotiq_gripper
+	url = https://github.com/PickNikRobotics/ros2_robotiq_gripper.git
+	branch = humble
+[submodule "utils/ur/src/Universal_Robots_ROS2_Description"]
+	path = utils/ur/src/Universal_Robots_ROS2_Description
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS2_Description.git
+	branch = humble
+[submodule "utils/ur/src/Universal_Robots_ROS2_Gazebo_Simulation"]
+	path = utils/ur/src/Universal_Robots_ROS2_Gazebo_Simulation
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git
+	branch = humble
+[submodule "utils/ur/src/serial"]
+	path = utils/ur/src/serial
+	url = https://github.com/tylerjw/serial.git
+	branch = ros2
+[submodule "utils/mesh_generation/sam-3d-objects"]
+	path = utils/mesh_generation/sam-3d-objects
+	url = https://github.com/facebookresearch/sam-3d-objects.git
+[submodule "utils/segmentation/transformers"]
+	path = utils/segmentation/transformers
+	url = https://github.com/huggingface/transformers.git

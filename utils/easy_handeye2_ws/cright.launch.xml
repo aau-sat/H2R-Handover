@@ -1,0 +1,18 @@
+<launch>
+  <set_env name="LC_NUMERIC" value="en_US.UTF-8"/>
+
+
+
+  <include file="$(find-pkg-share easy_handeye2)/launch/calibrate.launch.py">
+    <arg name="calibration_type" value="eye_on_base"/>
+    <arg name="name" value="calibration_right_camera"/>
+
+
+    <arg name="robot_base_frame" value="base"/> 
+    <arg name="robot_effector_frame" value="tool0"/>
+
+    <arg name="tracking_base_frame" value="right_color_optical_frame"/>
+    <arg name="tracking_marker_frame" value="aruco_board_center"/>
+  </include>
+
+</launch>

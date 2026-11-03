@@ -1,0 +1,19 @@
+# In a terminal inside Docker where you use ros2 cli tools
+
+# this is only needed for the old 16GB PC visual pipeline setup
+source /opt/ros/foxy/setup.bash
+
+pip install catkin_pkg empy==3.3.4 lark
+
+# build realsense_ws (if not built yet)
+cd realsense_ws; colcon build; cd ..
+
+# source realsense_ws workspace with ros2 message definition
+source realsense_ws/install/setup.bash
+
+# build action message definition (if not built yet)
+cd ros2_ws; colcon build; cd ..
+
+source ros2_ws/install/setup.bash
+
+# https://forums.developer.nvidia.com/t/realsense-splitter-no-definition-of-realsense2-camera-msgs-for-os-version-focal/258884

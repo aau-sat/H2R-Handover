@@ -1,0 +1,19 @@
+<launch>
+  <!-- Ensure numeric locale is correct -->
+  <set_env name="LC_NUMERIC" value="en_US.UTF-8"/>
+
+  <!-- ================= UR ROBOT DRIVER ================= -->
+<include file="$(find-pkg-share ur_robot_driver)/launch/ur_control.launch.py">
+  <arg name="ur_type" value="ur3e"/>
+  <arg name="robot_ip" value="192.168.2.11"/>
+  <arg name="launch_rviz" value="false"/>
+  <arg name="headless_mode" value="true"/>
+</include>
+
+
+  <!-- ================= MOVEIT ================= -->
+  <include file="$(find-pkg-share ur_moveit_config)/launch/ur_moveit.launch.py">
+    <arg name="ur_type" value="ur3e"/>
+    <arg name="launch_rviz" value="true"/>
+  </include>
+</launch>
