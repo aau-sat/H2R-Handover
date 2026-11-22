@@ -1,6 +1,14 @@
 # H2R Handover System - BrokenArm (RGMC @ ICRA 2026)
 
-Main codebase for the Human-to-Robot (H2R) Handover System developed by team **BrokenArm** from the [SAT group](https://www.aau.at/en/smart-systems-technologies/sensors-and-actuators/) at the [University of Klagenfurt](https://www.aau.at/en/), presented at the **RGMC 2026** at **ICRA 2026** in Vienna, Austria.
+Official open-source repository for the Human-to-Robot (H2R) Handover System developed by team **BrokenArm** from the [Smart System Technologies, Sensors, Actuators & Modular Robotics (SAT) group](https://www.aau.at/en/smart-systems-technologies/sensors-and-actuators/) at the [University of Klagenfurt](https://www.aau.at/en/), presented at the **RGMC 2026** (Robotic Grasping and Manipulation Competition) held in scope of **ICRA 2026** in Vienna, Austria.
+
+Our system achieved **top score in the Qualification benchmark among participating teams** (71.41 points) and achieved a **75% success rate in the live Finals** under zero-shot physical handover of unknown containers across diverse lighting and environment conditions.
+
+The core contribution is a robust, distributed, and highly-tunable architecture that seamlessly integrates:
+* **Dual-Camera 3D Perception & Tracking:** Real-time object and hand tracking using open-vocabulary detectors (YOLOE), MediaPipe hand tracking, and spatial sensor fusion.
+* **Human-Aware Diffusion Grasp Synthesis:** Rapid grasp generation with geometric, roll-isomorphism, and kinematic singularity filtering.
+* **Closed-Loop Multi-Modal Interaction:** Real-time visual servoing, high-sensitivity custom tactile feedback for delicate grasping, and wrist-mounted force-torque touchdown detection.
+* **Rapid Deployment:** Modular architecture that can be deployed on site and calibrated in a minimal amount of time.
 
 To set up a local copy of the repository, see [Getting the Code](#getting-the-code).
 
@@ -17,15 +25,27 @@ If you have any questions, please reach out to the project maintainers:
     - [Competition Flow:](#competition-flow)
     - [Resources \& Media:](#resources--media)
   - [Team](#team)
+    - [Support](#support)
+    - [Supervisors](#supervisors)
   - [Repository Structure](#repository-structure)
-  - [Two-PC Setup](#two-pc-setup)
+  - [Robot Hardware \& Sensor Suite](#robot-hardware--sensor-suite)
+  - [System Environment \& Computing Infrastructure](#system-environment--computing-infrastructure)
+    - [System Environment](#system-environment)
+    - [Computing Infrastructure](#computing-infrastructure)
   - [Getting the Code](#getting-the-code)
   - [Quick Start / Running the System on a Real Robot](#quick-start--running-the-system-on-a-real-robot)
   - [Running the System in Simulation](#running-the-system-in-simulation)
-  - [External Workspaces](#external-workspaces)
-  - [Building packages](#building-packages)
+    - [1. Fast Mock / ROS 2 Simulation](#1-fast-mock--ros-2-simulation)
+    - [2. Full Dynamic Digital Twin Simulation (`handover_sim`)](#2-full-dynamic-digital-twin-simulation-handover_sim)
+  - [External Dependencies: GraspGen Setup](#external-dependencies-graspgen-setup)
+  - [External Dependencies: MoveIt 2 Setup](#external-dependencies-moveit-2-setup)
+  - [Building Packages](#building-packages)
+    - [Camera Calibration](#camera-calibration)
+    - [Hardware \& Acceleration Requirements](#hardware--acceleration-requirements)
   - [SAM3 segmentation model](#sam3-segmentation-model)
   - [Roadmap \& Refactoring](#roadmap--refactoring)
+  - [Acknowledgements \& Third-Party Credits](#acknowledgements--third-party-credits)
+  - [Sponsorship](#sponsorship)
 
 ---
 
@@ -34,11 +54,11 @@ If you have any questions, please reach out to the project maintainers:
 The [RGMC 2026](https://sites.google.com/view/rgmcomp) focuses on advancing dynamic and generalizable robotic manipulation in human-centered environments.
 
 ### Competition Flow:
-1. **Qualification Phase (CORSMAL):** Online benchmark phase requiring perception and physical reasoning under sensory ambiguity. Protocol can be found [here](https://corsmal.github.io/benchmark.html). Qualification results can be found [here](https://corsmal.github.io/events/rgmc/icra2026/qualification.html).
-2. **On-Site Competition (ICRA 2026, Vienna):** Physical deployment on target robotic hardware, executing real-time human-to-robot handovers under varying constraints and dynamic conditions. Results and final rankings can be found [here](https://corsmal.github.io/events/rgmc/icra2026/competition.html).
+1. **Qualification Phase (CORSMAL):** Online benchmark phase requiring perception and physical reasoning under sensory ambiguity. Protocol can be found [here](https://corsmal.github.io/benchmark.html). Qualification results can be found [here](https://corsmal.github.io/events/rgmc/icra2026/leaderboards.html#corsmal-overall).
+2. **On-Site Competition (ICRA 2026, Vienna):** Physical deployment on target robotic hardware, executing real-time human-to-robot handovers under varying constraints and dynamic conditions. Results and final rankings can be found [here](https://corsmal.github.io/events/rgmc/icra2026/leaderboards.html).
 
 ### Resources & Media:
-* Project Report: [Read our Technical Report (PDF)](https://corsmal.github.io/events/rgmc/icra2026/index.html)
+* Project Report (under `BrokenArm`): [Read our Technical Report (PDF)](https://corsmal.github.io/events/rgmc/icra2026/teams.html)
 * Video Demonstration: [Watch on YouTube](https://www.youtube.com/watch?v=0MkqkYvmN5c)
 
 ---
@@ -47,11 +67,22 @@ The [RGMC 2026](https://sites.google.com/view/rgmcomp) focuses on advancing dyna
 
 Team **BrokenArm**, [SAT group](https://www.aau.at/en/smart-systems-technologies/sensors-and-actuators/), [University of Klagenfurt](https://www.aau.at/en/):
 
-* Nadezhda Varzonova
-* Valerian Pichler
+* Nadezhda Varzonova (Team/Tech Lead)
 * Daniel Bugelnig
-* Christoph Rauter
+* Valerian Pichler
 * Markus Kräuter
+* Christoph Rauter
+
+The team consisted of 2 Bachelor students (Nadezhda, Markus) and 3 Master students (Daniel, Valerian, Christoph) at the time of the competition.
+
+### Support
+* Amon Peter Ferreira-Weratschnig (Technical support)
+* Tobias Mitterer (Firmware support, on-site testing assistance)
+* Barnaba Ubezio (Qualification assistance)
+
+### Supervisors
+* Hubert Zangl (lab head, main supervisor)
+* Serkan Ergun (secondary supervisor)
 
 ---
 
@@ -84,14 +115,32 @@ Team **BrokenArm**, [SAT group](https://www.aau.at/en/smart-systems-technologies
 
 ---
 
-## Two-PC Setup
+## Robot Hardware & Sensor Suite
 
-Due to deployment across two physical on-site machines with distinct code environments, the system is split into two parts:
+The physical setup is built on standard industrial hardware augmented with heterogeneous sensing modalities:
 
-* **Vision PC (Blackwell):** Vision pipeline.
-* **Motion PC:** Motion control, physical connection to the robot.
+* **Robot Manipulator:** Universal Robots **UR7e** 6-DOF industrial collaborative manipulator, offering reach and payload suitable for dynamic handovers. It connects directly to the motion workstation via a dedicated 1 Gbps hardware Ethernet link.
+* **End-Effector (Gripper):** Robotiq **2F-140** parallel-jaw gripper, selected for its large 140 mm stroke, enabling variable-sized object acquisition and clean integration with grasp generation models.
+* **Visual Perception (Dual Cameras):** Two static **Intel RealSense D435i** cameras monitoring the visual workspace, streaming RGB-D frames at 640×480 resolution at 30 FPS. Camera-to-robot extrinsics are calibrated using `easy_handeye2` via an end-effector calibration board (0.5–2 cm accuracy).
+* **Force-Torque Sensor:** Wrist-mounted Robotiq **FT 300-S** Force-Torque Sensor, utilized for touchdown detection during object placement and real-time contact force monitoring.
+* **Custom Tactile Finger Arrays:** Custom-built, barometric-pressure-sensor-based tactile sensors developed in the SAT lab by the Team Lead and the technical team. Mounted on the gripper fingers, each sensor features a 7-taxel grid streaming normal force measurements over Bluetooth Low Energy (BLE) at up to 60 FPS per finger with high sensitivity for delicate grasping.
+  > **Note:** The tactile workspace (`utils/tactile_ws`) is designed modularly—any standard tactile sensor can be interfaced. For technical specifications, schematics, or inquiries regarding the lab's custom tactile sensor, please contact the SAT lab.
 
-During development, each part lived on its own branch (`dev` and `motion_planning`). This public repository is a single snapshot that merges the final state of both, so the code for both PCs is on one branch.
+---
+
+## System Environment & Computing Infrastructure
+
+### System Environment
+* **Operating System:** Ubuntu Linux 22.04 LTS
+* **ROS 2 Distribution:** ROS 2 Humble Hawksbill
+* **DDS Backbone:** **Eclipse Cyclone DDS** (`rmw_cyclonedds_cpp`) is used as the ROS 2 communication backbone across the network link to guarantee low-latency real-time performance.
+
+### Computing Infrastructure
+To guarantee strict real-time execution, the computational workload is bifurcated across two workstations, connected via a dedicated 2.5 Gbps Ethernet link:
+* **Vision Pipeline Workstation:** Equipped with an AMD Ryzen 9 9950X 16-Core Processor and an NVIDIA RTX PRO 6000 Blackwell GPU (96 GB VRAM), executing object detection (YOLOE), SAM 3 segmentation, MediaPipe hand tracking, 3D object tracking, physical property estimation, and GraspGen synthesis.
+* **Motion Planning Workstation:** Powered by an AMD Ryzen 9 5950X 16-Core Processor, exclusively reserved for real-time trajectory generation, MoveIt 2 Servo control, and direct hardware communication with the UR7e controller (1 Gbps link).
+
+Both components are unified in this monorepo on the `dev` branch, allowing the complete architecture to be maintained together while running distributed across workstations or locally in simulation.
 
 > **Note:** Experimental features developed in a Bachelor's thesis based on this system are on the `nad_thesis` branch. To learn about them, refer to the [thesis manuscript](https://drive.google.com/file/d/17Dt7FN3H-CJDMB9CM2PRGcGUX0tk9Wqs/view?usp=sharing).
 
@@ -111,7 +160,7 @@ The setup scripts expect the repository at `~/rgmc-2026`. If you cloned without 
 ## Quick Start / Running the System on a Real Robot
 
 1. **Calibrate the Cameras:** Calibrate the cameras and refine calibration using the provided calibration tools in `utils/easy_handeye2_ws/`.
-2. **Launch Perception (Vision PC):**
+2. **Launch Perception (Vision Workstation):**
    In one terminal, run the following commands to start the persistent services which don't need to be restarted for every handover:
    ```bash
    cd utils/visual_pipeline_setup
@@ -122,10 +171,10 @@ The setup scripts expect the repository at `~/rgmc-2026`. If you cloned without 
    cd utils/visual_pipeline_setup
    sh vision_setup_tmux.sh
    ```
-   Note that `tmux` sessions are used for the setup, so familiarize yourself with keyboard shortcuts for switching between windows etc.
-   Also note that these setup scripts **show exactly which scripts are relevant for the handover pipeline**. This way you will not be lost in the multitude of scripts and `python` environments in the repository. For instructions of how to launch individual parts and how code works contact the members of [team BrokenArm](#team).
-3. **Launch Motion Execution (Motion PC):**
-    In one terminal, run the following commands to start the persistent, robot setup scripts which launch drivers and start connection with the real robot. This `tmux` session doesn't need to be restarted for every handover:
+   Note that `tmux` sessions are used for the setup, so familiarize yourself with keyboard shortcuts for switching between windows etc. These setup scripts orchestrate the active nodes for the handover perception pipeline (segmentation, grasp generation service, VLM server, and camera streams).
+   > **Note:** These setup scripts **show exactly which scripts are relevant for the handover pipeline**. This way you will not be lost in the multitude of scripts and `python` environments in the repository.
+3. **Launch Motion Execution (Motion Workstation):**
+    In one terminal, run the following commands to start the persistent robot setup scripts which launch drivers and start connection with the real robot. This `tmux` session doesn't need to be restarted for every handover:
    ```bash
    cd utils/ur
    sh ur_setup_tmux.sh
@@ -160,18 +209,46 @@ For high-fidelity simulation including human hand motion trajectories, dynamic o
 
 ---
 
-## External Workspaces
+## External Dependencies: GraspGen Setup
 
-To run a visual pipeline, grasp generation scripts need to be launched. The grasp generation module depends on `GraspGen` model with its code environment. Due to legacy reasons, the `GraspGen` official repository was cloned and built outside of the main repository. The path to the external workspace can be found in visual pipeline start scripts. The path to the workspace (`~/packages/GraspGen/GraspGen`) is located on the Blackwell PC.
+The grasp generation module utilizes [NVlabs/GraspGen](https://github.com/NVlabs/GraspGen) for deep-learning-based grasp pose synthesis. Due to its dedicated PyTorch environment and dependencies, GraspGen is expected as an external workspace at `~/packages/GraspGen/GraspGen`.
 
-This repository only keeps and launches the client side of grasp generation module and keeps the current state of the grasp generation service script. The same service script is actually launched from the external workspace.
+To set up GraspGen for the vision pipeline:
+1. **Clone the repository:**
+   ```bash
+   mkdir -p ~/packages/GraspGen
+   git clone https://github.com/NVlabs/GraspGen.git ~/packages/GraspGen/GraspGen
+   ```
+2. **Set up the Conda environment:**
+   Follow the installation guide in [NVlabs/GraspGen](https://github.com/NVlabs/GraspGen) to create and activate the `graspgen` conda environment, and download the model checkpoints (including the Robotiq 2F-140 configuration).
+3. **Deploy the custom three-stage grasp service script:**
+   Copy the three-stage service script from this repository into the GraspGen `scripts/` directory:
+   ```bash
+   cp ~/rgmc-2026/utils/grasp_generation/scripts/grasp_service_three_stage.py ~/packages/GraspGen/GraspGen/scripts/
+   ```
+   Ensure the checkpoint file `models/checkpoints/graspgen_robotiq_2f_140.yml` is present in your GraspGen workspace.
+
+Once configured, the grasp service and Meshcat visualization server are launched automatically by `utils/visual_pipeline_setup/service_setup_tmux.sh`.
 
 ---
 
-## Building packages
+## External Dependencies: MoveIt 2 Setup
 
-Note that some `/utils` ros2 packages need to be built with `colcon`.
-The system-active packages that require building are:
+The motion control module relies on **MoveIt 2** built and sourced from an external workspace:
+1. Build MoveIt 2 from source in a separate ROS 2 workspace with the `humble` branch selected.
+2. Source the MoveIt 2 workspace prior to executing robot motion scripts:
+   ```bash
+   source <path_to_moveit2_ws>/install/setup.bash
+   ```
+3. **Thesis Branch Compatibility (`nad_thesis`):** For the thesis extensions on the `nad_thesis` branch, the MoveIt 2 version corresponds exactly to the validated release tag:
+   * [`thesis-ur7e-validated`](https://github.com/Incomprehensible/moveit2/releases/tag/thesis-ur7e-validated)
+
+---
+
+## Building Packages
+
+Note that some `/utils` ROS2 packages need to be built with `colcon`.
+The system-active packages that require building are contained in:
 * `utils/ur`
 * `utils/pose_tracking/depth_segmentation_tracking`
 * `utils/tactile_ws`
@@ -180,8 +257,14 @@ The system-active packages that require building are:
 * `utils/ros2_ws`
 * `utils/simple_ur_code/moveit_stuff`
 
-Moreover, visual pipeline is built for the **Blackwell PC** architecture. Many modules belonging to the pipeline utilize Nvidia GPU. The same build instructions are rarely applicable to the Nvidia GPUs from a different family.
-The instructions used for building the visual pipeline packages can be found in `Anytype` - online note making software. Contact the team to use the team's account to access the notes.
+
+### Camera Calibration
+
+For eye-on-base calibration, `easy_handeye2` package is used. Refer to the [repository](https://github.com/marcoesposito1988/easy_handeye2)'s build instructions.
+
+### Hardware & Acceleration Requirements
+* **GPU Compute:** Perception modules (SAM 3, YOLO-World, InstantMesh, GraspGen) require an NVIDIA GPU with CUDA support. Ensure your NVIDIA driver and CUDA version match your PyTorch installation.
+* **Conda Environments:** Various vision services utilize dedicated Conda / Python virtual environments (e.g., `sam3`, `graspgen`, `llm`) to prevent dependency conflicts, as launched in `service_setup_tmux.sh`.
 
 ---
 
@@ -193,7 +276,6 @@ Note that `sam3` requires obtaining the credentials from the HuggingFace website
 
 ## Roadmap & Refactoring
 
-- [ ] **Monorepo Unification:** Merge `perception` and `planning` into a single modular architecture and upload it to dev->main branches.
 - [ ] **Dependency Packaging:** Integrate external submodules/libraries directly via Git submodules or native package management to eliminate manual copying.
 - [ ] **Automated CI/CD:** Add simulation-in-the-loop tests for the full handover pipeline.
 
@@ -212,3 +294,5 @@ The H2R Handover System incorporates, adapts, or builds upon open-source codebas
 * **[GraspGen](https://github.com/NVlabs/GraspGen):** Deep learning grasp synthesis models.
 
 
+## Sponsorship
+The project has been founded and sponsored by the University of Klagenfurt, Department of Smart System Technologies, Sensors, Actuators & Modular Robotics group. This project is owned by SAT group.
