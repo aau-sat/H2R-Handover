@@ -58,7 +58,7 @@ Team **BrokenArm**, [SAT group](https://www.aau.at/en/smart-systems-technologies
 ## Repository Structure
 
 ```shell
-├── handover_sim/                        # legacy: Simulation environment for testing handovers
+├── handover_sim/                        # Simulation environment for testing handovers (Isaac Sim 4.5 / Isaac Lab)
 ├── utils/                               # Core modules, workspaces, and drivers
 │   ├── config.py                        # Global configuration variables
 │   ├── easy_handeye2_ws/                # Hand-eye calibration workspace
@@ -136,13 +136,27 @@ The setup scripts expect the repository at `~/rgmc-2026`. If you cloned without 
    sh moveit_setup_tmux.sh real
    ```
 ## Running the System in Simulation
-Perform the same steps as for the real robot until excluding step 3. 
-Instead, do this:
-```
+
+The repository provides two simulation pathways:
+
+### 1. Fast Mock / ROS 2 Simulation
+To launch the robot motion pipeline using MoveIt 2 mock components (without needing physical hardware):
+```bash
 cd utils/ur
 sh moveit_setup_tmux.sh
 ```
-This will not launch the real robot setup scripts and instead launch the simulation environment for testing handovers.
+This starts the MoveIt 2 planning scene and mock controller stack.
+
+### 2. Full Dynamic Digital Twin Simulation (`handover_sim`)
+For high-fidelity simulation including human hand motion trajectories, dynamic object physics, and camera perception streaming into ROS 2 topics:
+* See [`handover_sim/README.md`](./handover_sim/README.md) for full setup instructions using **NVIDIA Isaac Sim 4.5.0** and **Isaac Lab 1.x**.
+* To launch the complete handover stage:
+  ```bash
+  source ~/IsaacLab/env_isaaclab.sh
+  cd handover_sim/test_scripts
+  ~/IsaacLab/isaaclab.sh -p test_stage.py
+  ```
+* For topic-based ROS 2 and MoveIt 2 closed-loop containerized control in Isaac Sim, refer to [`handover_sim/moveit_integration/ur10e_2f140_topic_based_ros2_control`](./handover_sim/moveit_integration/ur10e_2f140_topic_based_ros2_control/README.md).
 
 ---
 
@@ -182,4 +196,19 @@ Note that `sam3` requires obtaining the credentials from the HuggingFace website
 - [ ] **Monorepo Unification:** Merge `perception` and `planning` into a single modular architecture and upload it to dev->main branches.
 - [ ] **Dependency Packaging:** Integrate external submodules/libraries directly via Git submodules or native package management to eliminate manual copying.
 - [ ] **Automated CI/CD:** Add simulation-in-the-loop tests for the full handover pipeline.
+
+---
+
+## Acknowledgements & Third-Party Credits
+
+The H2R Handover System incorporates, adapts, or builds upon open-source codebases and research datasets:
+* **[GENH2R Benchmark](https://github.com/GenH2R/GenH2R):** Dynamic handover motion datasets used in simulation.
+* **[MANO Hand Model](https://mano.is.tue.mpg.de/):** 3D articulated human hand kinematic models (Max Planck Institute for Intelligent Systems).
+* **[YCB Benchmarks](https://www.ycbbenchmarks.com/):** 3D object models and physical property benchmarks.
+* **[UR_Robotiq](https://git.cps.unileoben.ac.at/Niko/UR_Robotiq) & [topic_based_ros2_control](https://gitlab.com/quentin.deyna/ur10e_2f140_topic_based_ros2_control):** ROS 2 control and MoveIt 2 integration by Quentin Deyna, Nikolas Schwarz (Uni Leoben), and PickNik Robotics.
+* **[SAM 3](https://github.com/facebookresearch/sam3) & [Segment Anything 3D](https://github.com/facebookresearch/sam-3d-objects):** Zero-shot segmentation models by Meta AI Research.
+* **[YOLO-World](https://github.com/AILab-CVC/YOLO-World):** Real-time open-vocabulary object detection.
+* **[InstantMesh](https://github.com/TencentARC/InstantMesh):** Rapid 3D mesh generation from single images (Tencent ARC).
+* **[GraspGen](https://github.com/NVlabs/GraspGen):** Deep learning grasp synthesis models.
+
 
