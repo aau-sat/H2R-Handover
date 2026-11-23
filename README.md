@@ -3,9 +3,9 @@
 <!-- <img src="images/CROP_logo.png" width="280" alt="Team BrokenArm Logo" /> -->
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="images/CROP_logo.png">
-  <source media="(prefers-color-scheme: light)" srcset="images/logo_color_black_BrokenArm.png">
-  <img src="images/CROP_logo.png" width="280" alt="Team BrokenArm Logo" />
+  <source media="(prefers-color-scheme: dark)" width="200" srcset="images/CROP_logo.png">
+  <source media="(prefers-color-scheme: light)" width="200" srcset="images/logo_color_black_BrokenArm.png">
+  <img src="images/CROP_logo.png" width="200" alt="Team BrokenArm Logo" />
 </picture>
 
 
@@ -288,6 +288,8 @@ If you use this system, code, simulation framework, or benchmark findings in you
 ```
 
 </div>
+
+You can also cite this repository directly using GitHub's "Cite this repository" button in the sidebar or via [[CITATION.cff]].
 
 ---
 

@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the technical report listed under preferred-citation."
+type: software
+title: "Human-to-Robot (H2R) Handover System"
+abstract: "H2R handover system by team BrokenArm for the Robotic Grasping and Manipulation Competition (RGMC) at IEEE ICRA 2026."
+authors:
+  - family-names: Varzonova
+    given-names: Nadezhda
+    affiliation: "University of Klagenfurt"
+  - family-names: Bugelnig
+    given-names: Daniel Johannes
+    affiliation: "University of Klagenfurt"
+  - family-names: Kräuter
+    given-names: Markus Herbert
+    affiliation: "University of Klagenfurt"
+  - family-names: Pichler
+    given-names: Valerian
+    affiliation: "University of Klagenfurt"
+  - family-names: Rauter
+    given-names: Christoph Wilhelm
+    affiliation: "University of Klagenfurt"
+repository-code: "https://github.com/aau-sat/H2R-Handover"
+license-url: "https://github.com/aau-sat/H2R-Handover/blob/dev/LICENSE"
+keywords:
+  - human-robot handover
+  - grasping
+  - RGMC
+  - ICRA 2026
+  - ROS 2
+preferred-citation:
+  type: report
+  title: "RGMC2026 H2R Handover Track Solution"
+  authors:
+    - family-names: Varzonova
+      given-names: Nadezhda
+    - family-names: Bugelnig
+      given-names: Daniel Johannes
+    - family-names: Kräuter
+      given-names: Markus Herbert
+    - family-names: Pichler
+      given-names: Valerian
+    - family-names: Rauter
+      given-names: Christoph Wilhelm
+  institution:
+    name: "University of Klagenfurt, Smart Systems Technologies (SAT)"
+  year: 2026
+  notes: "Robotic Grasping and Manipulation Competition (RGMC) at IEEE ICRA 2026"
