@@ -23,10 +23,6 @@
 
 <br>
 
-⭐ **If you find this work or codebase helpful, please consider starring the repository!** ⭐
-
-<br>
-
 <div align="center">
 <img src="images/h2r.png" width="70%" alt="H2R System" style="border-radius: 8px;" />
 <p><em>Physical deployment of the BrokenArm H2R Handover System.</em></p>
@@ -46,6 +42,7 @@
 
 ## 💡 Overview & Competition Achievements
 
+<div align="left">
 Achieving safe, compliant, and responsive Human-to-Robot (H2R) handovers remains a significant challenge, especially when deploying rigid, high-payload industrial hardware with minimal safety margins. 
 
 Developed by team **BrokenArm** from the [SAT Group](https://www.aau.at/en/smart-systems-technologies/sensors-and-actuators/) at the [University of Klagenfurt](https://www.aau.at/en/), this system was engineered for the **Human-to-Robot Handover Track** of the 11th Robotic Grasping and Manipulation Competition (**RGMC 2026**) held at **IEEE ICRA 2026** in Vienna, Austria.
@@ -60,6 +57,7 @@ Developed by team **BrokenArm** from the [SAT Group](https://www.aau.at/en/smart
 * **Demonstration Video:** [Watch on YouTube](https://www.youtube.com/watch?v=0MkqkYvmN5c)
 * **Setup Guide:** [Step-by-step Installation & Execution Guide (SETUP.md)](SETUP.md)
 * **Simulation Digital Twin:** [Isaac Sim 4.5.0 Environment (handover_sim/README.md)](handover_sim/README.md)
+</div>
 
 ---
 
@@ -96,6 +94,8 @@ The system executes zero-shot handovers across diverse container types, dynamic 
 
 ## ✨ Key System Contributions
 
+<div align="left">
+  
 1. **Dual-Camera 3D Spatial Perception & Tracking:**
    - Real-time open-vocabulary object segmentation using **YOLOE** combined with 2D hand landmark tracking via **MediaPipe**.
    - Spatial back-projection into 3D point clouds with pinhole models and base-frame fusion running at a stable 30 FPS.
@@ -113,6 +113,8 @@ The system executes zero-shot handovers across diverse container types, dynamic 
 4. **Rapid On-Site Deployment:**
    - Distributed monorepo architecture separating perception from motion control over a 2.5 Gbps Ethernet link with **Eclipse Cyclone DDS**.
    - Dual-camera extrinsics calibrated in under 10 minutes (0.5–2 cm registration accuracy).
+
+</div>
 
 ---
 
@@ -169,6 +171,8 @@ flowchart LR
 
 ## 🖥️ Computing & Network Infrastructure
 
+<div align="left">
+
 To guarantee strict real-time execution, computation is split across two workstations over a **2.5 Gbps Ethernet link**:
 
 * **Vision Pipeline Workstation:**
@@ -181,15 +185,20 @@ To guarantee strict real-time execution, computation is split across two worksta
   - **Role:** High-frequency visual servoing, MoveIt 2 trajectory planning, and low-level robot control.
 * **Middleware:** **Ubuntu 22.04 LTS** + **ROS 2 Humble** with **Eclipse Cyclone DDS** (`rmw_cyclonedds_cpp`).
 
+</div>
+
 ---
 
 ## 📦 Quick Start Summary
 
-For the complete, step-by-step installation, dependency configuration, package compilation, and tmux startup commands, please refer to our dedicated guide:
+For the complete, step-by-step installation, dependency configuration, package compilation, and `tmux` startup commands, please refer to our dedicated guide:
 
 👉 **[Complete Setup & Deployment Guide (SETUP.md)](SETUP.md)**
 
+<div align="left">
+
 ### Fast Clone
+
 ```bash
 # Install Git LFS
 git lfs install
@@ -213,9 +222,13 @@ cd ~/rgmc-2026/utils/ur && sh ur_setup_tmux.sh
 cd ~/rgmc-2026/utils/ur && sh moveit_setup_tmux.sh real
 ```
 
+</div>
+
 ---
 
 ## 🔬 Simulation Digital Twin (`handover_sim`)
+
+<div align="left">
 
 We provide a digital twin environment based on **NVIDIA Isaac Sim 4.5.0** and **Isaac Lab 1.x**:
 * Replays realistic human handover motions using the **GenH2R** dataset from the [work of Wang et al](https://genh2r.github.io/).
@@ -224,6 +237,7 @@ We provide a digital twin environment based on **NVIDIA Isaac Sim 4.5.0** and **
 
 Refer to **[handover_sim/README.md](handover_sim/README.md)** for execution commands and configuration details.
 
+</div>
 
 <div align="center">
 <img src="images/sim2.jpg" width="95%" alt="Simulated Environment" />
@@ -233,6 +247,8 @@ Refer to **[handover_sim/README.md](handover_sim/README.md)** for execution comm
 ---
 
 ## 👥 Team BrokenArm
+
+<div align="left">
 
 Developed at the **[Smart Systems Technologies (SAT) Group](https://www.aau.at/en/smart-systems-technologies/sensors-and-actuators/)**, Department of Sensors, Actuators & Modular Robotics, **[University of Klagenfurt](https://www.aau.at/en/)**, Austria:
 
@@ -251,11 +267,15 @@ Developed at the **[Smart Systems Technologies (SAT) Group](https://www.aau.at/e
 * **Prof. Hubert Zangl** (Head of SAT Lab, Main Supervisor)
 * **Dr. Serkan Ergun** (Secondary Supervisor)
 
+</div>
+
 ---
 
 ## 📖 Citation
 
 If you use this system, code, simulation framework, or benchmark findings in your research, please cite our technical report:
+
+<div align="left">
 
 ```bibtex
 @techreport{brokenarm2026h2r,
@@ -267,9 +287,13 @@ If you use this system, code, simulation framework, or benchmark findings in you
 }
 ```
 
+</div>
+
 ---
 
 ## 🤝 Acknowledgements & Third-Party Credits
+
+<div align="left">
 
 The BrokenArm system incorporates, builds upon, or interfaces with the following open-source frameworks:
 * **[GraspGen](https://github.com/NVlabs/GraspGen):** 6-DoF diffusion grasp generation model.
@@ -281,6 +305,8 @@ The BrokenArm system incorporates, builds upon, or interfaces with the following
 * **[YOLO-E](https://docs.ultralytics.com/models/yoloe):** Real-time open-vocabulary object detector and segmenter.
 * **[GenH2R](https://github.com/chenjy2003/genh2r):** Dynamic handover motion sequences used in simulation.
 * **[InstantMesh](https://github.com/TencentARC/InstantMesh):** Rapid 3D mesh generation from single images (Tencent ARC), not used in the competition solution.
+
+</div>
 
 ---
 
