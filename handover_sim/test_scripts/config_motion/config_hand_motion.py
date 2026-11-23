@@ -80,14 +80,6 @@ robot_joint_names = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint",
                              "right_outer_knuckle_joint", "left_outer_finger_joint", "right_outer_finger_joint",
                              "left_inner_finger_joint", "right_inner_finger_joint",
                              "left_inner_finger_knuckle_joint", "right_inner_finger_knuckle_joint"]
-<<<<<<< HEAD
-robot_qpos = {'shoulder_pan_joint': 0.0, 'shoulder_lift_joint': -1.5477, 'elbow_joint': 1.5837, 'wrist_1_joint': 0.9789, 
-              'wrist_2_joint': 1.54, 'wrist_3_joint': 3.1816, 'finger_joint': 0.02, 'right_outer_knuckle_joint': 0.021, 
-              'left_outer_finger_joint': 0.0, 'right_outer_finger_joint': 0.0, 'left_inner_finger_joint': -0.0296,
-              'right_inner_finger_joint': 0.0308, 'left_inner_finger_knuckle_joint': -0.0292, 'right_inner_finger_knuckle_joint': -0.0304}
-robot_joint_stiffness = {joint_name: 10000.0 for joint_name in robot_joint_names}
-robot_joint_damping = {joint_name: 100.0 for joint_name in robot_joint_names}
-=======
 # change poses to:
 robot_qpos = {'shoulder_pan_joint': 0.0, 'shoulder_lift_joint': -3.2117, 'elbow_joint': 2.3741, 'wrist_1_joint': 0.979, 
               'wrist_2_joint': 1.5398, 'wrist_3_joint': 3.1816, 'finger_joint': 0.0189, 'right_outer_knuckle_joint': 0.0199, 
@@ -95,4 +87,3 @@ robot_qpos = {'shoulder_pan_joint': 0.0, 'shoulder_lift_joint': -3.2117, 'elbow_
               'right_inner_finger_joint': 0.0294, 'left_inner_finger_knuckle_joint': -0.0279, 'right_inner_finger_knuckle_joint': -0.029}
 robot_joint_stiffness = {joint_name: 50.0 for joint_name in robot_joint_names}
 robot_joint_damping = {joint_name: 1.0 for joint_name in robot_joint_names}
->>>>>>> f972ba45060b8e03633095466d386f0ba1b943d9

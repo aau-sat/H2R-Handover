@@ -17,7 +17,6 @@
   <depend>controller_manager_msgs</depend>
   <depend>grasp_generation</depend>
   <depend>visual_properties</depend>
-  <!-- <depend>touchdown_detection</depend> -->
   <depend>tactile_detection</depend>
   <depend>rclcpp_action</depend>
   <depend>control_msgs</depend>

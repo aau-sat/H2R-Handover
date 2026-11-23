@@ -90,7 +90,7 @@ def launch_setup(context, *args, **kwargs):
     servo_params = {
         "moveit_servo": ParameterBuilder("ur_custom")
         .yaml("config/servo_config.yaml")
-        .yaml("config/pose_tracking_settings_s8.yaml")
+        .yaml("config/pose_tracking_settings.yaml")
         .to_dict()
     }
 
@@ -236,8 +236,3 @@ def generate_launch_description():
 
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld
-
-# ros2 launch moveit_stuff plan_approach_grasp.launch.py placement_pose_interpolation_steps:=20 grasp_pose_interpolation_steps:=1 grasp_pose_interpolation_profile:=ease_in_cubic use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false placement_pose_interpolation_profile:=ease_in_quad
-
-# at qualification
-# ros2 launch moveit_stuff plan_approach_grasp.launch.py placement_pose_interpolation_steps:=50 grasp_pose_interpolation_steps:=2 grasp_pose_interpolation_profile:=ease_in_cubic  placement_pose_interpolation_profile:=linear use_sim_time:=false use_fake_hardware:=false fake_sensor_commands:=false
