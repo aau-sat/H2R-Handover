@@ -99,7 +99,7 @@ git lfs install
 
 Clone the repository with submodules to `~/rgmc-2026`:
 ```bash
-git clone --recurse-submodules https://github.com/aau-sat/RGMC-2026.git ~/rgmc-2026
+git clone --recurse-submodules https://github.com/aau-sat/H2R-Handover.git ~/rgmc-2026
 ```
 
 > **Note:** The setup scripts expect the repository at `~/rgmc-2026`. If you cloned without `--recurse-submodules`, run:

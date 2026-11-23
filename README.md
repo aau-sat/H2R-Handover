@@ -204,7 +204,7 @@ For the complete, step-by-step installation, dependency configuration, package c
 git lfs install
 
 # Clone repository with all submodules
-git clone --recurse-submodules https://github.com/aau-sat/RGMC-2026.git ~/rgmc-2026
+git clone --recurse-submodules https://github.com/aau-sat/H2R-Handover.git ~/rgmc-2026
 ```
 
 ### Handover Execution Workflow
