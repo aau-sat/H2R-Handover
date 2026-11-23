@@ -2,6 +2,14 @@
 
 This directory contains the simulation framework and digital twin assets developed for the **Human-to-Robot (H2R) Handover System** presented at **RGMC 2026 (ICRA 2026)**. It provides Isaac Sim/Isaac Lab scenes for simulating dynamic human handover motions, camera perception streams, and robot manipulator execution.
 
+<div align="center">
+
+| FoundationPose Tracked Hand | MediaPipe Hand Detection | Simulated Trajectory |
+| :---: | :---: | :---: |
+| <img src="../images/sim3.gif" width="100%" alt="Environment (sped up)" /> | <img src="../images/sim.png" width="60%" alt="MANO hand detection" /> | <img src="../images/hand.gif" width="100%" alt="MANO hand trajectory" /> | 
+
+</div>
+
 ---
 
 ## Table of Contents
@@ -100,6 +108,7 @@ For closed-loop trajectory planning and MoveIt 2 control connected directly to I
   1. **Isaac Sim DevContainer** (`.devcontainer/isaac/`): Runs GPU-accelerated simulation with the ROS 2 bridge.
   2. **ROS 2 DevContainer** (`.devcontainer/ros2/`): Compiles MoveIt 2 and robot drivers for hardware or mock simulation.
 - Refer to [`ur10e_2f140_topic_based_ros2_control/README.md`](./moveit_integration/ur10e_2f140_topic_based_ros2_control/README.md) for full container build and startup instructions.
+- Refer to the [original repository](https://github.com/qdeyna/ur10e_2f140_topic_based_ros2_control) for any updates.
 
 ---
 
@@ -131,45 +140,56 @@ Key simulation parameters are defined in [`test_scripts/config_motion/config_han
 
 This simulation module incorporates assets, trajectories, and frameworks from the following research projects:
 
-1. **GENH2R Motion Dataset:**
-   - Trajectory data in `assets/motions/genh2r/` is derived from the **GENH2R** benchmark.
+1. **GenH2R Motion Dataset:**
+   - Encoded trajectory data in `assets/motions/genh2r/` is derived from the **GenH2R** framework.
    - *Citation:*
      ```bibtex
-     @inproceedings{wang2024genh2r,
-       title={GENH2R: Learning Generalizable Human-to-Robot Handover with Point Cloud Video},
-       author={Wang, Zicheng and Chen, Bo and Wang, He and others},
-       booktitle={IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-       year={2024}
-     }
+     @article{wang2024genh2r,
+      title={GenH2R: Learning Generalizable Human-to-Robot Handover via Scalable Simulation,    Demonstration, and Imitation},
+      author={Wang, Zifan and Chen, Junyu and Chen, Ziqing and Xie, Pengwei and Chen, Rui and Yi, Li},
+      journal={arXiv preprint arXiv:2401.00929},
+      year={2024}}
      ```
 
 2. **MANO Hand Model:**
    - Hand kinematic topologies and USD models in `assets/usd/hand/` and `assets/urdf/hand/` are based on the MANO model by the Max Planck Institute for Intelligent Systems.
    - *Citation:*
      ```bibtex
-     @article{romero2017embodied,
-       title={Embodied Hands: Modeling and Capturing Hands and Bodies Together},
-       author={Romero, Javier and Tzionas, Dimitrios and Black, Michael J.},
-       journal={ACM Transactions on Graphics (TOG)},
-       volume={36},
-       number={6},
-       year={2017}
-     }
+       @article{MANO:SIGGRAPHASIA:2017,
+          title = {Embodied Hands: Modeling and Capturing Hands and Bodies Together},
+          author = {Romero, Javier and Tzionas, Dimitrios and Black, Michael J.},
+          journal = {ACM Transactions on Graphics, (Proc. SIGGRAPH Asia)},
+          volume = {36},
+          number = {6},
+          series = {245:1--245:17},
+          month = nov,
+          year = {2017},
+          month_numeric = {11}}
      ```
 
 3. **YCB Object Set:**
    - 3D models in `assets/usd/objects/ycb_ported/` originate from the YCB Object and Model Set.
    - *Citation:*
      ```bibtex
-     @article{calli2015ycb,
-       title={The YCB object and Model Set: Towards Common Benchmarks for Manipulation Research},
-       author={Calli, Berk and Walsman, Aaron and Singh, Arjun and Srinivasa, Siddhartha and Abbeel, Pieter and Dollar, Aaron M.},
-       journal={IEEE Transactions on Robotics},
-       volume={31},
-       number={5},
-       pages={1206--1218},
-       year={2015}
-     }
+     @article{DBLP:journals/corr/CalliWSSAD15,
+        author       = {Berk {\c{C}}alli and
+                        Aaron Walsman and
+                        Arjun Singh and
+                        Siddhartha S. Srinivasa and
+                        Pieter Abbeel and
+                        Aaron M. Dollar},
+        title        = {Benchmarking in Manipulation Research: The {YCB} Object and Model
+                        Set and Benchmarking Protocols},
+        journal      = {CoRR},
+        volume       = {abs/1502.03143},
+        year         = {2015},
+        url          = {https://doi.org/10.48550/arXiv.1502.03143},
+        doi          = {10.48550/ARXIV.1502.03143},
+        eprinttype   = {arXiv},
+        eprint       = {1502.03143},
+        timestamp    = {Thu, 01 Oct 2026 11:25:44 +0200},
+        biburl       = {https://dblp.org/rec/journals/corr/CalliWSSAD15.bib},
+        bibsource    = {dblp computer science bibliography, https://dblp.org}}
      ```
 
 4. **UR10e 2F-140 Topic-Based ROS 2 Control:**
@@ -177,3 +197,14 @@ This simulation module incorporates assets, trajectories, and frameworks from th
 
 5. **NVIDIA Isaac Sim & Isaac Lab:**
    - Simulation engine powered by [NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim) and [Isaac Lab](https://isaac-sim.github.io/IsaacLab/).
+
+6. **DexYCB Benchmark & Dataset:**
+   - Recorded trajectories provided by [DexYCB](https://dex-ycb.github.io/).
+   - *Citation*:
+   ```bibtex
+    @INPROCEEDINGS{chao:cvpr2021,
+      author    = {Yu-Wei Chao and Wei Yang and Yu Xiang and Pavlo Molchanov and Ankur Handa and    Jonathan Tremblay and Yashraj S. Narang and Karl {Van Wyk} and Umar Iqbal and Stan Birchfield   and  Jan Kautz and Dieter Fox},
+      booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+      title     = {{DexYCB}: A Benchmark for Capturing Hand Grasping of Objects},
+      year      = {2021},}
+   ```
