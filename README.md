@@ -289,7 +289,7 @@ If you use this system, code, simulation framework, or benchmark findings in you
 
 </div>
 
-You can also cite this repository directly using GitHub's "Cite this repository" button in the sidebar or via [[CITATION.cff]].
+You can also cite this repository directly using GitHub's "Cite this repository" button in the sidebar or via [CITATION.cff](CITATION.cff).
 
 ---
 
